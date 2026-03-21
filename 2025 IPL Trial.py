@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import datetime
 import os
+import pandas as pd
 from streamlit_google_signin import st_google_signin
 import database
 import fetch_results
@@ -343,6 +344,72 @@ def show_leaderboard():
         use_container_width=True
     )
 
+# --- 8.5 PAGE 8: ADMIN DASHBOARD ---
+def show_admin_dashboard():
+    st.title("👑 Admin Dashboard")
+    st.write("Master Sheet: Match Results & User Scores")
+    
+    # Needs to fetch all matches
+    from scoring import calculate_scores
+    scores, match_scores = calculate_scores()
+    
+    # get match results and users
+    match_results = database.get_all_match_results() # {match_id: dict()}
+    all_users = {u['email']: u['game_name'] for u in database.get_all_users()}
+    
+    # Organise user predictions for W, OC, PC for each match
+    all_preds_raw = database.get_all_predictions()
+    preds_by_match = {}
+    for p in all_preds_raw:
+        m_id = p['match_id']
+        email = p['email']
+        if m_id not in preds_by_match:
+            preds_by_match[m_id] = {}
+        preds_by_match[m_id][email] = p
+        
+    scores_by_match = {}
+    for entry in match_scores:
+        m_id = entry['match_id']
+        email = entry['email']
+        if m_id not in scores_by_match:
+            scores_by_match[m_id] = {}
+        scores_by_match[m_id][email] = entry['points_earned']
+        
+    table_data = []
+    
+    for match in MATCHES:
+        m_id = match['id']
+        row = {
+            "Match #": match['display_id'],
+            "Match": f"{match['team_a']} vs {match['team_b']}",
+        }
+        
+        if m_id in match_results:
+            res = match_results[m_id]
+            row["Actual Winner"] = res.get("winner", "")
+            row["Actual OC"] = res.get("orange_cap", "")
+            row["Actual PC"] = res.get("purple_cap", "")
+        else:
+            row["Actual Winner"] = ""
+            row["Actual OC"] = ""
+            row["Actual PC"] = ""
+            
+        # For each user, add their W, OC, PC and Pts
+        for email, game_name in all_users.items():
+            user_pred = preds_by_match.get(m_id, {}).get(email, {})
+            row[f"{game_name} Win"] = user_pred.get('winner', "")
+            row[f"{game_name} OC"] = user_pred.get('orange_cap', "")
+            row[f"{game_name} PC"] = user_pred.get('purple_cap', "")
+            row[f"{game_name} Pts"] = scores_by_match.get(m_id, {}).get(email, 0)
+            
+        table_data.append(row)
+        
+    if table_data:
+        df = pd.DataFrame(table_data)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+    else:
+        st.info("No match data available yet.")
+
 # --- 9. MAIN CONTROLLER ---
 def main():
     # Session Persistence Tab Sync Strategy: 
@@ -442,6 +509,13 @@ def main():
             st.session_state.nav_selection = "🏆 Leaderboard"
             st.rerun()
 
+        if user_email == "msrivats2010@gmail.com":
+            st.divider()
+            st.write("### 🛡️ Admin")
+            if st.button("👑 Admin Dashboard", use_container_width=True, type="primary" if st.session_state.nav_selection == "👑 Admin Dashboard" else "secondary"):
+                st.session_state.nav_selection = "👑 Admin Dashboard"
+                st.rerun()
+
     # Route request
     if st.session_state.nav_selection == "📅 Fixtures":
         if st.session_state.selected_match is None:
@@ -459,6 +533,8 @@ def main():
             show_match_predictions()
     elif st.session_state.nav_selection == "🏆 Leaderboard":
         show_leaderboard()
+    elif st.session_state.nav_selection == "👑 Admin Dashboard":
+        show_admin_dashboard()
 
 if __name__ == "__main__":
     main()
