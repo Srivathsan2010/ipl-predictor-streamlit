@@ -49,7 +49,14 @@ if not CLIENT_ID or not CLIENT_SECRET:
     st.stop()
 
 def show_google_login():
-    auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?client_id={CLIENT_ID}&response_type=code&redirect_uri={urllib.parse.quote(REDIRECT_URI)}&scope=openid%20email%20profile"
+    params = {
+        "client_id": CLIENT_ID.strip() if CLIENT_ID else "",
+        "redirect_uri": REDIRECT_URI.strip() if REDIRECT_URI else "",
+        "response_type": "code",
+        "scope": "openid email profile",
+        "prompt": "select_account"
+    }
+    auth_url = f"https://accounts.google.com/o/oauth2/auth?{urllib.parse.urlencode(params)}"
     st.markdown(
         f'''
         <a href="{auth_url}" target="_self" style="text-decoration: none;">
