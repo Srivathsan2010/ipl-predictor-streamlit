@@ -3,9 +3,8 @@ import json
 import datetime
 import os
 from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
-import requests as std_requests
-import urllib.parse
+from google.auth.transport import requests
+import streamlit.components.v1 as components
 import database
 import fetch_results
 import scoring
@@ -21,60 +20,57 @@ JSON_FILE_PATH = "ipl-2025-squad-final_new.json"
 
 # --- GOOGLE AUTHENTICATION ---
 CLIENT_ID = None
-CLIENT_SECRET = None
-REDIRECT_URI = 'http://localhost:8501' # Local fallback
 
-# Attempt to get credentials from Streamlit Secrets
+# Attempt to get CLIENT_ID from Streamlit Secrets
 if "google_auth" in st.secrets:
     CLIENT_ID = st.secrets["google_auth"].get("client_id")
-    CLIENT_SECRET = st.secrets["google_auth"].get("client_secret")
-    redirect_uris = st.secrets["google_auth"].get("redirect_uris", [])
-    if redirect_uris:
-        REDIRECT_URI = redirect_uris[0]
 
-# Fallback: Attempt to get credentials from local JSON file
-if (not CLIENT_ID or not CLIENT_SECRET) and os.path.exists("google_credentials.json"):
+# Fallback: Attempt to get CLIENT_ID from local JSON file
+if not CLIENT_ID and os.path.exists("google_credentials.json"):
     try:
         with open("google_credentials.json", "r") as f:
             creds = json.load(f)
             CLIENT_ID = creds.get("web", {}).get("client_id")
-            CLIENT_SECRET = creds.get("web", {}).get("client_secret")
-            if creds.get("web", {}).get("redirect_uris"):
-                REDIRECT_URI = creds.get("web", {})["redirect_uris"][0]
     except Exception:
         pass
 
-if not CLIENT_ID or not CLIENT_SECRET:
-    st.error("🚨 **CRITICAL SETUP ERROR** 🚨\n\nGoogle Auth Client ID or Secret is missing! Please configure `[google_auth]` in Streamlit Secrets or provide `google_credentials.json` locally.")
+if not CLIENT_ID:
+    st.error("🚨 **CRITICAL SETUP ERROR** 🚨\n\nGoogle Auth Client ID is missing! Please configure `[google_auth]` in Streamlit Secrets or provide `google_credentials.json` locally.")
     st.stop()
 
 def show_google_login():
-    auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?client_id={CLIENT_ID}&response_type=code&redirect_uri={urllib.parse.quote(REDIRECT_URI)}&scope=openid%20email%20profile"
-    st.markdown(
-        f'''
-        <a href="{auth_url}" target="_self" style="text-decoration: none;">
-            <div style="
-                display: inline-flex;
-                align-items: center;
-                background-color: white;
-                color: #757575;
-                font-family: Roboto, sans-serif;
-                font-weight: 500;
-                font-size: 14px;
-                padding: 8px 16px;
-                border: 1px solid #dadce0;
-                border-radius: 4px;
-                cursor: pointer;
-                text-decoration: none;
-                box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
-            ">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width: 18px; height: 18px; margin-right: 12px;"/>
-                Sign in with Google
-            </div>
-        </a>
-        ''',
-        unsafe_allow_html=True
-    )
+    html_code = f"""
+    <html>
+      <body style="margin: 0; padding: 0; display: flex; justify-content: center;">
+        <script src="https://accounts.google.com/gsi/client" async></script>
+        <div id="g_id_onload"
+             data-client_id="{CLIENT_ID}"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left">
+        </div>
+        <script>
+          function handleCredentialResponse(response) {{
+              // Redirect the parent window with the JWT as a query parameter
+              // Using replace avoids adding the login page to the browser history
+              const url = new URL(window.parent.location.href);
+              url.searchParams.set('jwt', response.credential);
+              window.parent.location.replace(url.href);
+          }}
+        </script>
+      </body>
+    </html>
+    """
+    components.html(html_code, height=60)
 
 # --- 2. DATA LOADING FUNCTION ---
 @st.cache_data
@@ -388,40 +384,26 @@ def main():
     # Session Persistence Tab Sync Strategy: 
     # Use st.query_params to carry session to new tabs and survive component cookie delays
 
-    # 1. Check if we just received an OAuth authorization code
-    if "code" in st.query_params:
-        code = st.query_params.get("code")
+    # 1. Check if we just received a JWT from the Google Login callback
+    if "jwt" in st.query_params:
+        jwt_token = st.query_params.get("jwt")
         try:
-            # Exchange code for tokens
-            token_url = "https://oauth2.googleapis.com/token"
-            data = {
-                "code": code,
-                "client_id": CLIENT_ID,
-                "client_secret": CLIENT_SECRET,
-                "redirect_uri": REDIRECT_URI,
-                "grant_type": "authorization_code"
-            }
-            response = std_requests.post(token_url, data=data)
-            response.raise_for_status()
-            tokens = response.json()
-            id_token_jwt = tokens["id_token"]
-
             # Verify the token
-            idinfo = id_token.verify_oauth2_token(id_token_jwt, google_requests.Request(), CLIENT_ID)
+            idinfo = id_token.verify_oauth2_token(jwt_token, requests.Request(), CLIENT_ID)
             st.session_state["connected"] = True
             st.session_state["user_info"] = {
                 "email": idinfo['email'],
                 "name": idinfo.get('name', 'Unknown User')
             }
-            # Clean up the URL
-            st.query_params.clear()
+            # Remove the jwt from query params to clean up the URL
+            st.query_params.pop("jwt")
             # Sync to query params so new tabs can share session
             st.query_params["user_email"] = idinfo['email']
             st.query_params["user_name"] = idinfo.get('name', 'Unknown User')
             st.rerun()
-        except Exception as e:
-            st.error(f"Error logging in with Google: {str(e)}")
-            st.query_params.clear()
+        except ValueError as e:
+            st.error("Invalid Google login token. Please try again.")
+            st.query_params.pop("jwt")
 
     if "user_email" in st.query_params and not st.session_state.get('connected'):
         st.session_state["connected"] = True
