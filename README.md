@@ -1,2 +1,2 @@
-# ipl-2025-predictor
+# ipl-2026-predictor
 IPL Predictor 
