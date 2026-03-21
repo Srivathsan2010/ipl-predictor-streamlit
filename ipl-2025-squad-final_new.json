@@ -1,0 +1,817 @@
+{
+    "squads": [
+        {
+            "team_name": "Chennai Super Kings",
+            "team_abbr": "CSK",
+            "players": [
+                "Ruturaj Gaikwad",
+                "Andre Siddarth C",
+                "Shaik Rasheed",
+                "Rahul Tripathi",
+                "Ayush Mhatre",
+                "Dewald Brevis",
+                "Shivam Dube",
+                "Rachin Ravindra",
+                "Deepak Hooda",
+                "Vijay Shankar",
+                "Ramakrishna Ghosh",
+                "Ravindra Jadeja",
+                "Anshul Kamboj",
+                "Sam Curran",
+                "Ravichandran Ashwin",
+                "Devon Conway",
+                "MS Dhoni",
+                "Vansh Bedi",
+                "Urvil Patel",
+                "Jamie Overton",
+                "Kamlesh Nagarkoti",
+                "Shreyas Gopal",
+                "Matheesha Pathirana",
+                "Mukesh Choudhary",
+                "Nathan Ellis",
+                "Noor Ahmad",
+                "Khaleel Ahmed"
+            ]
+        },
+        {
+            "team_name": "Delhi Capitals",
+            "team_abbr": "DC",
+            "players": [
+                "Faf du Plessis",
+                "Karun Nair",
+                "Sameer Rizvi ",
+                "Sediqullah Atal",
+                "Ashutosh Sharma",
+                "Tripurana Vijay",
+                "Axar Patel",
+                "Darshan Nalkande",
+                "Ajay Jadav Mandal",
+                "Manvanth Kumar L",
+                "Madhav Tiwari",
+                "Tristan Stubbs",
+                "Abishek Porel",
+                "Donovan Ferreira",
+                "KL Rahul",
+                "Vipraj Nigam",
+                "Kuldeep Yadav",
+                "Dushmantha Chameera",
+                "Mohit Sharma",
+                "T Natarajan",
+                "Mukesh Kumar",
+                "Mustafizur Rahman"
+            ]
+        },
+        {
+            "team_name": "Gujarat Titans",
+            "team_abbr": "GT",
+            "players": [
+                "Sai Sudharsan",
+                "Shubman Gill",
+                "Shahrukh Khan",
+                "Rahul Tewatia",
+                "Nishant Sindhu",
+                "Sherfane Rutherford",
+                "Mahipal Lomror",
+                "Dasun Shanaka",
+                "Rashid Khan",
+                "Ravisrinivasan Sai Kishore",
+                "Arshad Khan",
+                "Jayant Yadav",
+                "Karim Janat",
+                "Washington Sundar",
+                "Kumar Kushagra",
+                "Anuj Rawat",
+                "Kusal Mendis",
+                "Jos Buttler",
+                "Gerald Coetzee",
+                "Manav Suthar",
+                "Gurnoor Brar",
+                "Ishant Sharma",
+                "Kagiso Rabada",
+                "Kulwant Khejroliya",
+                "Prasidh Krishna",
+                "Mohammed Siraj"
+            ]
+        },
+        {
+            "team_name": "Kolkata Knight Riders",
+            "team_abbr": "KKR",
+            "players": [
+                "Manish Pandey",
+                "Ajinkya Rahane",
+                "Rinku Singh",
+                "Angkrish Raghuvanshi",
+                "Rovman Powell",
+                "Anukul Roy",
+                "Ramandeep Singh ",
+                "Venkatesh Iyer",
+                "Moeen Ali",
+                "Sunil Narine",
+                "Andre Russell",
+                "Quinton de Kock",
+                "Rahmanullah Gurbaz",
+                "Luvnith Sisodia",
+                "Varun Chakaravarthy",
+                "Mayank Markande",
+                "Vaibhav Arora",
+                "Harshit Rana",
+                "Anrich Nortje",
+                "Spencer Johnson",
+                "Chetan Sakariya"
+            ]
+        },
+        {
+            "team_name": "Lucknow Super Giants",
+            "team_abbr": "LSG",
+            "players": [
+                "Himmat Singh",
+                "David Miller",
+                "Aiden Markram",
+                "Ayush Badoni",
+                "Mitchell Marsh",
+                "Abdul Samad",
+                "Arshin Kulkarni",
+                "Yuvraj Chaudhary",
+                "Shahbaz Ahmed",
+                "RS Hangargekar",
+                "Shardul Thakur",
+                "Matthew Breetzke",
+                "Nicholas Pooran",
+                "Aryan Juyal",
+                "Rishabh Pant",
+                "Ravi Bishnoi",
+                "Akash Deep",
+                "Manimaran Siddharth",
+                "Shamar Joseph",
+                "Avesh Khan",
+                "Prince Yadav",
+                "Akash Maharaj Singh",
+                "Digvesh Singh Rathi",
+                "William ORourke"
+            ]
+        },
+        {
+            "team_name": "Mumbai Indians",
+            "team_abbr": "MI",
+            "players": [
+                "Rohit Sharma",
+                "Suryakumar Yadav",
+                "Tilak Varma",
+                "Naman Dhir",
+                "Bevon Jacobs",
+                "Hardik Pandya",
+                "Raj Bawa",
+                "Will Jacks",
+                "Mitchell Santner",
+                "Arjun Tendulkar",
+                "Corbin Bosch",
+                "Ryan Rickelton",
+                "Krishnan Shrijith",
+                "Robin Minz",
+                "Jasprit Bumrah",
+                "Ashwani Kumar",
+                "Reece Topley",
+                "Karn Sharma",
+                "Trent Boult",
+                "Satyanarayana Raju",
+                "Deepak Chahar",
+                "Mujeeb Ur Rahman",
+                "Raghu Sharma",
+                "Jonny Bairstow",
+                "Richard Gleeson",
+                "Charith Asalanka"
+            ]
+        },
+        {
+            "team_name": "Punjab Kings",
+            "team_abbr": "PK",
+            "players": [
+                "Nehal Wadhera",
+                "Harnoor Singh",
+                "Shreyas Iyer",
+                "Pyla Avinash",
+                "Priyansh Arya",
+                "Musheer Khan",
+                "Marcus Stoinis",
+                "Aaron Hardie",
+                "Suryansh Shedge",
+                "Shashank Singh",
+                "Mitchell Owen",
+                "Praveen Dubey",
+                "Azmatullah Omarzai",
+                "Marco Jansen",
+                "Prabhsimran Singh",
+                "Josh Inglis",
+                "Vishnu Vinod",
+                "Harpreet Brar",
+                "Arshdeep Singh",
+                "Yuzvendra Chahal",
+                "Vijaykumar Vyshak",
+                "Kuldeep Sen",
+                "Yash Thakur",
+                "Xavier Bartlett",
+                "Kyle Jamieson"
+            ]
+        },
+        {
+            "team_name": "Rajasthan Royals",
+            "team_abbr": "RR",  
+            "players": [
+                "Vaibhav Suryavanshi",
+                "Shimron Hetmyer",
+                "Yashasvi Jaiswal",
+                "Shubham Dubey",
+                "Riyan Parag",
+                "Wanindu Hasaranga",
+                "Sanju Samson",
+                "Dhruv Jurel",
+                "Kunal Singh Rathore",
+                "Lhuan-dre Pretorius",
+                "Yudhvir Singh Charak",
+                "Tushar Deshpande",
+                "Kumar Kartikeya",
+                "Akash Madhwal",
+                "Kwena Maphaka",
+                "Maheesh Theekshana",
+                "Fazalhaq Farooqi",
+                "Ashok Sharma",
+                "Jofra Archer",
+                "Nandre Burger"
+            ]
+        },
+        {
+            "team_name": "Royal Challengers Bengaluru",
+            "team_abbr": "RCB", 
+            "players": [
+                "Virat Kohli",
+                "Rajat Patidar",
+                "Swastik Chikara",
+                "Tim David",
+                "Mayank Agarawal",
+                "Krunal Pandya",
+                "Liam Livingstone",
+                "Manoj Bhandage",
+                "Jacob Bethell",
+                "Romario Shepherd",
+                "Swapnil Singh",
+                "Mohit Rathee",
+                "Philip Salt",
+                "Jitesh Sharma",
+                "Josh Hazlewood",
+                "Bhuvneshwar Kumar",
+                "Lungi Ngidi",
+                "Rasikh Dar Salam",
+                "Suyash Sharma",
+                "Yash Dayal",
+                "Nuwan Thushara",
+                "Abhinandan Singh"
+            ]
+        },
+        {
+            "team_name": "Sunrisers Hyderabad",
+            "team_abbr": "SRH",
+            "players": [
+                "Atharva Taide",
+                "Travis Head",
+                "Abhinav Manohar",
+                "Sachin Baby",
+                "Aniket Verma",
+                "Nitish Kumar Reddy",
+                "Abhishek Sharma",
+                "Kamindu Mendis",
+                "Wiaan Mulder",
+                "Harsh Dubey",
+                "Heinrich Klaasen",
+                "Ishan Kishan",
+                "Zeeshan Ansari",
+                "Pat Cummins",
+                "Mohammed Shami",
+                "Harshal Patel",
+                "Rahul Chahar",
+                "Simarjeet Singh",
+                "Eshan Malinga",
+                "Jaydev Unadkat"
+            ]
+        }
+    ],
+    "schedule": [
+        {
+            "matchId": 114960,
+            "team1": "Kolkata Knight Riders",
+            "team2": "Royal Challengers Bengaluru",
+            "venue": "Kolkata",
+            "date_time(est)": "2025-03-22 10:00"
+        },
+        {
+            "matchId": 114967,
+            "team1": "Sunrisers Hyderabad",
+            "team2": "Rajasthan Royals",
+            "venue": "Hyderabad",
+            "date_time(est)": "2025-03-23 06:00"
+        },
+        {
+            "matchId": 114976,
+            "team1": "Mumbai Indians",
+            "team2": "Chennai Super Kings",
+            "venue": "Chennai",
+            "date_time(est)": "2025-03-23 10:00"
+        },
+        {
+            "matchId": 114985,
+            "team1": "Lucknow Super Giants",
+            "team2": "Delhi Capitals",
+            "venue": "Visakhapatnam",
+            "date_time(est)": "2025-03-24 10:00"
+        },
+        {
+            "matchId": 114987,
+            "team1": "Punjab Kings",
+            "team2": "Gujarat Titans",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2025-03-25 10:00"
+        },
+        {
+            "matchId": 114996,
+            "team1": "Rajasthan Royals",
+            "team2": "Kolkata Knight Riders",
+            "venue": "Guwahati",
+            "date_time(est)": "2025-03-26 10:00"
+        },
+        {
+            "matchId": 115005,
+            "team1": "Sunrisers Hyderabad",
+            "team2": "Lucknow Super Giants",
+            "venue": "Hyderabad",
+            "date_time(est)": "2025-03-27 10:00"
+        },
+        {
+            "matchId": 115012,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Chennai Super Kings",
+            "venue": "Chennai",
+            "date_time(est)": "2025-03-28 10:00"
+        },
+        {
+            "matchId": 115014,
+            "team1": "Gujarat Titans",
+            "team2": "Mumbai Indians",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2025-03-29 10:00"
+        },
+        {
+            "matchId": 115030,
+            "team1": "Rajasthan Royals",
+            "team2": "Chennai Super Kings",
+            "venue": "Guwahati",
+            "date_time(est)": "2025-03-30 10:00"
+        },
+        {
+            "matchId": 115021,
+            "team1": "Sunrisers Hyderabad",
+            "team2": "Delhi Capitals",
+            "venue": "Visakhapatnam",
+            "date_time(est)": "2025-03-30 06:00"
+        },
+        {
+            "matchId": 115032,
+            "team1": "Kolkata Knight Riders",
+            "team2": "Mumbai Indians",
+            "venue": "Mumbai",
+            "date_time(est)": "2025-03-31 10:00"
+        },
+        {
+            "matchId": 115039,
+            "team1": "Lucknow Super Giants",
+            "team2": "Punjab Kings",
+            "venue": "Lucknow",
+            "date_time(est)": "2025-04-01 10:00"
+        },
+        {
+            "matchId": 115048,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Gujarat Titans",
+            "venue": "Bengaluru",
+            "date_time(est)": "2025-04-02 10:00"
+        },
+        {
+            "matchId": 115050,
+            "team1": "Kolkata Knight Riders",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "Kolkata",
+            "date_time(est)": "2025-04-03 10:00"
+        },
+        {
+            "matchId": 115059,
+            "team1": "Lucknow Super Giants",
+            "team2": "Mumbai Indians",
+            "venue": "Lucknow",
+            "date_time(est)": "2025-04-04 10:00"
+        },
+        {
+            "matchId": 115068,
+            "team1": "Delhi Capitals",
+            "team2": "Chennai Super Kings",
+            "venue": "Chennai",
+            "date_time(est)": "2025-04-05 06:00"
+        },
+        {
+            "matchId": 115075,
+            "team1": "Rajasthan Royals",
+            "team2": "Punjab Kings",
+            "venue": "Chandigarh",
+            "date_time(est)": "2025-04-05 10:00"
+        },
+        {
+            "matchId": 115093,
+            "team1": "Sunrisers Hyderabad",
+            "team2": "Gujarat Titans",
+            "venue": "Hyderabad",
+            "date_time(est)": "2025-04-06 10:00"
+        },
+        {
+            "matchId": 115095,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Mumbai Indians",
+            "venue": "Mumbai",
+            "date_time(est)": "2025-04-07 10:00"
+        },
+        {
+            "matchId": 115084,
+            "team1": "Lucknow Super Giants",
+            "team2": "Kolkata Knight Riders",
+            "venue": "Kolkata",
+            "date_time(est)": "2025-04-08 06:00"
+        },
+        {
+            "matchId": 115102,
+            "team1": "Punjab Kings",
+            "team2": "Chennai Super Kings",
+            "venue": "Chandigarh",
+            "date_time(est)": "2025-04-08 10:00"
+        },
+        {
+            "matchId": 115104,
+            "team1": "Gujarat Titans",
+            "team2": "Rajasthan Royals",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2025-04-09 10:00"
+        },
+        {
+            "matchId": 115111,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Delhi Capitals",
+            "venue": "Bengaluru",
+            "date_time(est)": "2025-04-10 10:00"
+        },
+        {
+            "matchId": 115113,
+            "team1": "Chennai Super Kings",
+            "team2": "Kolkata Knight Riders",
+            "venue": "Chennai",
+            "date_time(est)": "2025-04-11 10:00"
+        },
+        {
+            "matchId": 115122,
+            "team1": "Gujarat Titans",
+            "team2": "Lucknow Super Giants",
+            "venue": "Lucknow",
+            "date_time(est)": "2025-04-12 06:00"
+        },
+        {
+            "matchId": 115129,
+            "team1": "Punjab Kings",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "Hyderabad",
+            "date_time(est)": "2025-04-12 10:00"
+        },
+        {
+            "matchId": 115140,
+            "team1": "Mumbai Indians",
+            "team2": "Delhi Capitals",
+            "venue": "Delhi",
+            "date_time(est)": "2025-04-13 10:00"
+        },
+        {
+            "matchId": 115138,
+            "team1": "Rajasthan Royals",
+            "team2": "Royal Challengers Bengaluru",
+            "venue": "Jaipur",
+            "date_time(est)": "2025-04-13 06:00"
+        },
+        {
+            "matchId": 115149,
+            "team1": "Lucknow Super Giants",
+            "team2": "Chennai Super Kings",
+            "venue": "Lucknow",
+            "date_time(est)": "2025-04-14 10:00"
+        },
+        {
+            "matchId": 115156,
+            "team1": "Punjab Kings",
+            "team2": "Kolkata Knight Riders",
+            "venue": "Chandigarh",
+            "date_time(est)": "2025-04-15 10:00"
+        },
+        {
+            "matchId": 115165,
+            "team1": "Delhi Capitals",
+            "team2": "Rajasthan Royals",
+            "venue": "Delhi",
+            "date_time(est)": "2025-04-16 10:00"
+        },
+        {
+            "matchId": 115167,
+            "team1": "Sunrisers Hyderabad",
+            "team2": "Mumbai Indians",
+            "venue": "Mumbai",
+            "date_time(est)": "2025-04-17 10:00"
+        },
+        {
+            "matchId": 115174,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Punjab Kings",
+            "venue": "Bengaluru",
+            "date_time(est)": "2025-04-18 10:00"
+        },
+        {
+            "matchId": 115183,
+            "team1": "Lucknow Super Giants",
+            "team2": "Rajasthan Royals",
+            "venue": "Jaipur",
+            "date_time(est)": "2025-04-19 10:00"
+        },
+        {
+            "matchId": 115176,
+            "team1": "Delhi Capitals",
+            "team2": "Gujarat Titans",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2025-04-19 06:00"
+        },
+        {
+            "matchId": 115201,
+            "team1": "Chennai Super Kings",
+            "team2": "Mumbai Indians",
+            "venue": "Mumbai",
+            "date_time(est)": "2025-04-20 10:00"
+        },
+        {
+            "matchId": 115192,
+            "team1": "Punjab Kings",
+            "team2": "Royal Challengers Bengaluru",
+            "venue": "Chandigarh",
+            "date_time(est)": "2025-04-20 06:00"
+        },
+        {
+            "matchId": 115210,
+            "team1": "Gujarat Titans",
+            "team2": "Kolkata Knight Riders",
+            "venue": "Kolkata",
+            "date_time(est)": "2025-04-21 10:00"
+        },
+        {
+            "matchId": 115212,
+            "team1": "Lucknow Super Giants",
+            "team2": "Delhi Capitals",
+            "venue": "Lucknow",
+            "date_time(est)": "2025-04-22 10:00"
+        },
+        {
+            "matchId": 115221,
+            "team1": "Sunrisers Hyderabad",
+            "team2": "Mumbai Indians",
+            "venue": "Hyderabad",
+            "date_time(est)": "2025-04-23 10:00"
+        },
+        {
+            "matchId": 115230,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Rajasthan Royals",
+            "venue": "Bengaluru",
+            "date_time(est)": "2025-04-24 10:00"
+        },
+        {
+            "matchId": 115239,
+            "team1": "Chennai Super Kings",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "Chennai",
+            "date_time(est)": "2025-04-25 10:00"
+        },
+        {
+            "matchId": 115248,
+            "team1": "Punjab Kings",
+            "team2": "Kolkata Knight Riders",
+            "venue": "Kolkata",
+            "date_time(est)": "2025-04-26 10:00"
+        },
+        {
+            "matchId": 115255,
+            "team1": "Mumbai Indians",
+            "team2": "Lucknow Super Giants",
+            "venue": "Mumbai",
+            "date_time(est)": "2025-04-27 06:00"
+        },
+        {
+            "matchId": 115257,
+            "team1": "Delhi Capitals",
+            "team2": "Royal Challengers Bengaluru",
+            "venue": "Delhi",
+            "date_time(est)": "2025-04-27 10:00"
+        },
+        {
+            "matchId": 115266,
+            "team1": "Gujarat Titans",
+            "team2": "Rajasthan Royals",
+            "venue": "Jaipur",
+            "date_time(est)": "2025-04-28 10:00"
+        },
+        {
+            "matchId": 115275,
+            "team1": "Kolkata Knight Riders",
+            "team2": "Delhi Capitals",
+            "venue": "Delhi",
+            "date_time(est)": "2025-04-29 10:00"
+        },
+        {
+            "matchId": 115282,
+            "team1": "Chennai Super Kings",
+            "team2": "Punjab Kings",
+            "venue": "Chennai",
+            "date_time(est)": "2025-04-30 10:00"
+        },
+        {
+            "matchId": 115291,
+            "team1": "Mumbai Indians",
+            "team2": "Rajasthan Royals",
+            "venue": "Jaipur",
+            "date_time(est)": "2025-05-01 10:00"
+        },
+        {
+            "matchId": 115300,
+            "team1": "Gujarat Titans",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2025-05-02 10:00"
+        },
+        {
+            "matchId": 115302,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Chennai Super Kings",
+            "venue": "Bengaluru",
+            "date_time(est)": "2025-05-03 10:00"
+        },
+        {
+            "matchId": 115318,
+            "team1": "Punjab Kings",
+            "team2": "Lucknow Super Giants",
+            "venue": "Dharamsala",
+            "date_time(est)": "2025-05-04 10:00"
+        },
+        {
+            "matchId": 115309,
+            "team1": "Kolkata Knight Riders",
+            "team2": "Rajasthan Royals",
+            "venue": "Kolkata",
+            "date_time(est)": "2025-05-04 06:00"
+        },
+        {
+            "matchId": 115327,
+            "team1": "Delhi Capitals",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "Hyderabad",
+            "date_time(est)": "2025-05-05 10:00"
+        },
+        {
+            "matchId": 115336,
+            "team1": "Mumbai Indians",
+            "team2": "Gujarat Titans",
+            "venue": "Mumbai",
+            "date_time(est)": "2025-05-06 10:00"
+        },
+        {
+            "matchId": 115345,
+            "team1": "Kolkata Knight Riders",
+            "team2": "Chennai Super Kings",
+            "venue": "Kolkata",
+            "date_time(est)": "2025-05-07 10:00"
+        },
+        {
+            "matchId": 118811,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Kolkata Knight Riders",
+            "venue": "Bengaluru",
+            "date_time(est)": "2025-05-17 10:00"
+        },
+        {
+            "matchId": 118820,
+            "team1": "Rajasthan Royals",
+            "team2": "Punjab Kings",
+            "venue": "Jaipur",
+            "date_time(est)": "2025-05-18 06:00"
+        },
+        {
+            "matchId": 118829,
+            "team1": "Delhi Capitals",
+            "team2": "Gujarat Titans",
+            "venue": "Delhi",
+            "date_time(est)": "2025-05-18 10:00"
+        },
+        {
+            "matchId": 118838,
+            "team1": "Lucknow Super Giants",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "Lucknow",
+            "date_time(est)": "2025-05-19 10:00"
+        },
+        {
+            "matchId": 118847,
+            "team1": "Chennai Super Kings",
+            "team2": "Rajasthan Royals",
+            "venue": "Delhi",
+            "date_time(est)": "2025-05-20 10:00"
+        },
+        {
+            "matchId": 118853,
+            "team1": "Mumbai Indians",
+            "team2": "Delhi Capitals",
+            "venue": "Mumbai",
+            "date_time(est)": "2025-05-21 10:00"
+        },
+        {
+            "matchId": 118862,
+            "team1": "Gujarat Titans",
+            "team2": "Lucknow Super Giants",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2025-05-22 10:00"
+        },
+        {
+            "matchId": 118865,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "Bengaluru",
+            "date_time(est)": "2025-05-23 10:00"
+        },
+        {
+            "matchId": 118874,
+            "team1": "Punjab Kings",
+            "team2": "Delhi Capitals",
+            "venue": "Jaipur",
+            "date_time(est)": "2025-05-24 10:00"
+        },
+        {
+            "matchId": 118883,
+            "team1": "Sunrisers Hyderabad",
+            "team2": "Kolkata Knight Riders",
+            "venue": "Delhi",
+            "date_time(est)": "2025-05-25 10:00"
+        },
+        {
+            "matchId": 118880,
+            "team1": "Gujarat Titans",
+            "team2": "Chennai Super Kings",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2025-05-25 06:00"
+        },
+        {
+            "matchId": 118892,
+            "team1": "Punjab Kings",
+            "team2": "Mumbai Indians",
+            "venue": "Jaipur",
+            "date_time(est)": "2025-05-26 10:00"
+        },
+        {
+            "matchId": 118898,
+            "team1": "Lucknow Super Giants",
+            "team2": "Royal Challengers Bengaluru",
+            "venue": "Lucknow",
+            "date_time(est)": "2025-05-27 10:00"
+        },
+        {
+            "matchId": 118907,
+            "team1": "Punjab Kings",
+            "team2": "Royal Challengers Bengaluru",
+            "venue": "Chandigarh",
+            "date_time(est)": "2025-05-29 10:00"
+        },
+        {
+            "matchId": 118916,
+            "team1": "Gujarat Titans",
+            "team2": "Mumbai Indians",
+            "venue": "Chandigarh",
+            "date_time(est)": "2025-05-30 10:00"
+        },
+        {
+            "matchId": 118919,
+            "team1": "Punjab Kings",
+            "team2": "Mumbai Indians",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2025-06-01 10:00"
+        },
+        {
+            "matchId": 118928,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Punjab Kings",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2025-06-03 10:00"
+        }
+    ]
+}

@@ -1,0 +1,5 @@
+streamlit
+streamlit-google-auth
+pandas
+extra-streamlit-components
+requests
