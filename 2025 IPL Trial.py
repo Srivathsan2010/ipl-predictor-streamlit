@@ -2,10 +2,7 @@ import streamlit as st
 import json
 import datetime
 import os
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
-import requests as std_requests
-import urllib.parse
+from streamlit_google_signin import st_google_signin
 import database
 import fetch_results
 import scoring
@@ -21,67 +18,23 @@ JSON_FILE_PATH = "ipl-2025-squad-final_new.json"
 
 # --- GOOGLE AUTHENTICATION ---
 CLIENT_ID = None
-CLIENT_SECRET = None
-REDIRECT_URI = 'http://localhost:8501' # Local fallback
 
-# Attempt to get credentials from Streamlit Secrets
+# Attempt to get CLIENT_ID from Streamlit Secrets
 if "google_auth" in st.secrets:
     CLIENT_ID = st.secrets["google_auth"].get("client_id")
-    CLIENT_SECRET = st.secrets["google_auth"].get("client_secret")
-    redirect_uris = st.secrets["google_auth"].get("redirect_uris", [])
-    if redirect_uris:
-        REDIRECT_URI = redirect_uris[0]
 
-# Fallback: Attempt to get credentials from local JSON file
-if (not CLIENT_ID or not CLIENT_SECRET) and os.path.exists("google_credentials.json"):
+# Fallback: Attempt to get CLIENT_ID from local JSON file
+if not CLIENT_ID and os.path.exists("google_credentials.json"):
     try:
         with open("google_credentials.json", "r") as f:
             creds = json.load(f)
             CLIENT_ID = creds.get("web", {}).get("client_id")
-            CLIENT_SECRET = creds.get("web", {}).get("client_secret")
-            if creds.get("web", {}).get("redirect_uris"):
-                REDIRECT_URI = creds.get("web", {})["redirect_uris"][0]
     except Exception:
         pass
 
-if not CLIENT_ID or not CLIENT_SECRET:
-    st.error("🚨 **CRITICAL SETUP ERROR** 🚨\n\nGoogle Auth Client ID or Secret is missing! Please configure `[google_auth]` in Streamlit Secrets or provide `google_credentials.json` locally.")
+if not CLIENT_ID:
+    st.error("🚨 **CRITICAL SETUP ERROR** 🚨\n\nGoogle Auth Client ID is missing! Please configure `[google_auth]` in Streamlit Secrets or provide `google_credentials.json` locally.")
     st.stop()
-
-def show_google_login():
-    params = {
-        "client_id": CLIENT_ID.strip() if CLIENT_ID else "",
-        "redirect_uri": REDIRECT_URI.strip() if REDIRECT_URI else "",
-        "response_type": "code",
-        "scope": "openid email profile",
-        "prompt": "select_account"
-    }
-    auth_url = f"https://accounts.google.com/o/oauth2/auth?{urllib.parse.urlencode(params)}"
-    st.markdown(
-        f'''
-        <a href="{auth_url}" target="_self" style="text-decoration: none;">
-            <div style="
-                display: inline-flex;
-                align-items: center;
-                background-color: white;
-                color: #757575;
-                font-family: Roboto, sans-serif;
-                font-weight: 500;
-                font-size: 14px;
-                padding: 8px 16px;
-                border: 1px solid #dadce0;
-                border-radius: 4px;
-                cursor: pointer;
-                text-decoration: none;
-                box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3);
-            ">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" style="width: 18px; height: 18px; margin-right: 12px;"/>
-                Sign in with Google
-            </div>
-        </a>
-        ''',
-        unsafe_allow_html=True
-    )
 
 # --- 2. DATA LOADING FUNCTION ---
 @st.cache_data
@@ -395,41 +348,6 @@ def main():
     # Session Persistence Tab Sync Strategy: 
     # Use st.query_params to carry session to new tabs and survive component cookie delays
 
-    # 1. Check if we just received an OAuth authorization code
-    if "code" in st.query_params:
-        code = st.query_params.get("code")
-        try:
-            # Exchange code for tokens
-            token_url = "https://oauth2.googleapis.com/token"
-            data = {
-                "code": code,
-                "client_id": CLIENT_ID,
-                "client_secret": CLIENT_SECRET,
-                "redirect_uri": REDIRECT_URI,
-                "grant_type": "authorization_code"
-            }
-            response = std_requests.post(token_url, data=data)
-            response.raise_for_status()
-            tokens = response.json()
-            id_token_jwt = tokens["id_token"]
-
-            # Verify the token
-            idinfo = id_token.verify_oauth2_token(id_token_jwt, google_requests.Request(), CLIENT_ID)
-            st.session_state["connected"] = True
-            st.session_state["user_info"] = {
-                "email": idinfo['email'],
-                "name": idinfo.get('name', 'Unknown User')
-            }
-            # Clean up the URL
-            st.query_params.clear()
-            # Sync to query params so new tabs can share session
-            st.query_params["user_email"] = idinfo['email']
-            st.query_params["user_name"] = idinfo.get('name', 'Unknown User')
-            st.rerun()
-        except Exception as e:
-            st.error(f"Error logging in with Google: {str(e)}")
-            st.query_params.clear()
-
     if "user_email" in st.query_params and not st.session_state.get('connected'):
         st.session_state["connected"] = True
         st.session_state["user_info"] = {
@@ -440,7 +358,21 @@ def main():
     if not st.session_state.get('connected', False):
         st.title("Welcome to IPL Predictor 2025 🏏")
         st.write("Please sign in with your Google account to track your predictions!")
-        show_google_login()
+        
+        # Render the custom Streamlit Google Sign-In Component
+        token_payload = st_google_signin(client_id=CLIENT_ID)
+        
+        if token_payload:
+            st.session_state["connected"] = True
+            st.session_state["user_info"] = {
+                "email": token_payload.get('email', 'unknown@example.com'),
+                "name": token_payload.get('name', 'Unknown User')
+            }
+            # Sync to query params so new tabs can share session
+            st.query_params["user_email"] = token_payload.get('email', 'unknown@example.com')
+            st.query_params["user_name"] = token_payload.get('name', 'Unknown User')
+            st.rerun()
+            
         return
         
     # Ensure user info is processed
