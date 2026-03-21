@@ -1,7 +1,7 @@
 import json
 import database
 
-SCHEDULE_FILE = r"C:\Users\shrir\Desktop\IPL 2025\ipl-2025-squad-final_new.json"
+SCHEDULE_FILE = "ipl-2025-squad-final_new.json"
 
 def get_schedule_ordered():
     with open(SCHEDULE_FILE, 'r') as f:
