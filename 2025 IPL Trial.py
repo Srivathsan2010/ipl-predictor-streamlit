@@ -19,23 +19,37 @@ JSON_FILE_PATH = "ipl-2025-squad-final_new.json"
 # --- GOOGLE AUTHENTICATION ---
 # NOTE: To use real Google login, configure this file with valid OAuth 2.0 Credentials.
 # Inject Google Auth credentials dynamically for Streamlit Community Cloud
+# (Make sure to import whatever library gives you 'Authenticate' here)
+
+# Inject Google Auth credentials dynamically for Streamlit Community Cloud
 redirect_url = 'http://localhost:8501' # Local fallback
+creds_path = "google_credentials.json" # Default local path
+
+# Note: This assumes your Streamlit Secrets starts with [google_auth]
 if "google_auth" in st.secrets:
     creds_dict = {"web": dict(st.secrets["google_auth"])}
     
-    # Try to grab a cloud URI if configured in secrets under a different key, or just use the first redirect URI from the list
+    # Try to grab a cloud URI if configured in secrets
     if "redirect_uris" in creds_dict["web"] and len(creds_dict["web"]["redirect_uris"]) > 0:
         redirect_url = creds_dict["web"]["redirect_uris"][0]
     
-    with open("google_credentials.json", "w") as f:
-        json.dump(creds_dict, f, indent=4)
+    # Use the Linux /tmp folder (which is writeable & ephemeral in Streamlit Cloud)
+    creds_path = "/tmp/google_credentials.json"
+    
+    # Only write the file if it hasn't been written yet for this cloud instance
+    if not os.path.exists(creds_path):
+        with open(creds_path, "w") as f:
+            json.dump(creds_dict, f, indent=4)
+
 else:
-    if not os.path.exists("google_credentials.json"):
+    # If no secrets are found, we check if the local JSON file exists
+    if not os.path.exists(creds_path):
         st.error("🚨 **CRITICAL SETUP ERROR** 🚨\n\nGoogle Auth credentials are missing from Streamlit Secrets! The app cannot start.\n\nPlease go to your Streamlit Cloud Dashboard -> Settings -> Secrets and ensure the `[google_auth]` dictionary is properly pasted.")
         st.stop()
 
+# Initialize the Authenticator using whichever path we decided on
 authenticator = Authenticate(
-    secret_credentials_path='google_credentials.json',
+    secret_credentials_path=creds_path,
     cookie_name='my_cookie_name',
     cookie_key='this_is_secret',
     redirect_uri=redirect_url,
