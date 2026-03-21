@@ -1,5 +1,5 @@
 streamlit
-streamlit-google-auth
 pandas
 extra-streamlit-components
 requests
+google-auth>=2.0.0

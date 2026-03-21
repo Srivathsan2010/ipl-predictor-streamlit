@@ -2,7 +2,9 @@ import streamlit as st
 import json
 import datetime
 import os
-from streamlit_google_auth import Authenticate
+from google.oauth2 import id_token
+from google.auth.transport import requests
+import streamlit.components.v1 as components
 import database
 import fetch_results
 import scoring
@@ -17,43 +19,58 @@ database.init_db()
 JSON_FILE_PATH = "ipl-2025-squad-final_new.json"
 
 # --- GOOGLE AUTHENTICATION ---
-# NOTE: To use real Google login, configure this file with valid OAuth 2.0 Credentials.
-# Inject Google Auth credentials dynamically for Streamlit Community Cloud
-# (Make sure to import whatever library gives you 'Authenticate' here)
+CLIENT_ID = None
 
-# Inject Google Auth credentials dynamically for Streamlit Community Cloud
-redirect_url = 'http://localhost:8501' # Local fallback
-creds_path = "google_credentials.json" # Default local path
-
-# Note: This assumes your Streamlit Secrets starts with [google_auth]
+# Attempt to get CLIENT_ID from Streamlit Secrets
 if "google_auth" in st.secrets:
-    creds_dict = {"web": dict(st.secrets["google_auth"])}
-    
-    # Try to grab a cloud URI if configured in secrets
-    if "redirect_uris" in creds_dict["web"] and len(creds_dict["web"]["redirect_uris"]) > 0:
-        redirect_url = creds_dict["web"]["redirect_uris"][0]
-    
-    # Use the Linux /tmp folder (which is writeable & ephemeral in Streamlit Cloud)
-    creds_path = "/tmp/google_credentials.json"
-    
-    # Only write the file if it hasn't been written yet for this cloud instance
-    if not os.path.exists(creds_path):
-        with open(creds_path, "w") as f:
-            json.dump(creds_dict, f, indent=4)
+    CLIENT_ID = st.secrets["google_auth"].get("client_id")
 
-else:
-    # If no secrets are found, we check if the local JSON file exists
-    if not os.path.exists(creds_path):
-        st.error("🚨 **CRITICAL SETUP ERROR** 🚨\n\nGoogle Auth credentials are missing from Streamlit Secrets! The app cannot start.\n\nPlease go to your Streamlit Cloud Dashboard -> Settings -> Secrets and ensure the `[google_auth]` dictionary is properly pasted.")
-        st.stop()
+# Fallback: Attempt to get CLIENT_ID from local JSON file
+if not CLIENT_ID and os.path.exists("google_credentials.json"):
+    try:
+        with open("google_credentials.json", "r") as f:
+            creds = json.load(f)
+            CLIENT_ID = creds.get("web", {}).get("client_id")
+    except Exception:
+        pass
 
-# Initialize the Authenticator using whichever path we decided on
-authenticator = Authenticate(
-    secret_credentials_path=creds_path,
-    cookie_name='my_cookie_name',
-    cookie_key='this_is_secret',
-    redirect_uri=redirect_url,
-)
+if not CLIENT_ID:
+    st.error("🚨 **CRITICAL SETUP ERROR** 🚨\n\nGoogle Auth Client ID is missing! Please configure `[google_auth]` in Streamlit Secrets or provide `google_credentials.json` locally.")
+    st.stop()
+
+def show_google_login():
+    html_code = f"""
+    <html>
+      <body style="margin: 0; padding: 0; display: flex; justify-content: center;">
+        <script src="https://accounts.google.com/gsi/client" async></script>
+        <div id="g_id_onload"
+             data-client_id="{CLIENT_ID}"
+             data-context="signin"
+             data-ux_mode="popup"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+             data-type="standard"
+             data-shape="rectangular"
+             data-theme="outline"
+             data-text="signin_with"
+             data-size="large"
+             data-logo_alignment="left">
+        </div>
+        <script>
+          function handleCredentialResponse(response) {{
+              // Redirect the parent window with the JWT as a query parameter
+              // Using replace avoids adding the login page to the browser history
+              const url = new URL(window.parent.location.href);
+              url.searchParams.set('jwt', response.credential);
+              window.parent.location.replace(url.href);
+          }}
+        </script>
+      </body>
+    </html>
+    """
+    components.html(html_code, height=60)
 
 # --- 2. DATA LOADING FUNCTION ---
 @st.cache_data
@@ -366,20 +383,39 @@ def show_leaderboard():
 def main():
     # Session Persistence Tab Sync Strategy: 
     # Use st.query_params to carry session to new tabs and survive component cookie delays
+
+    # 1. Check if we just received a JWT from the Google Login callback
+    if "jwt" in st.query_params:
+        jwt_token = st.query_params.get("jwt")
+        try:
+            # Verify the token
+            idinfo = id_token.verify_oauth2_token(jwt_token, requests.Request(), CLIENT_ID)
+            st.session_state["connected"] = True
+            st.session_state["user_info"] = {
+                "email": idinfo['email'],
+                "name": idinfo.get('name', 'Unknown User')
+            }
+            # Remove the jwt from query params to clean up the URL
+            st.query_params.pop("jwt")
+            # Sync to query params so new tabs can share session
+            st.query_params["user_email"] = idinfo['email']
+            st.query_params["user_name"] = idinfo.get('name', 'Unknown User')
+            st.rerun()
+        except ValueError as e:
+            st.error("Invalid Google login token. Please try again.")
+            st.query_params.pop("jwt")
+
     if "user_email" in st.query_params and not st.session_state.get('connected'):
         st.session_state["connected"] = True
         st.session_state["user_info"] = {
             "email": st.query_params.get("user_email"),
             "name": st.query_params.get("user_name", "Unknown User")
         }
-
-    # Attempt to authenticate
-    authenticator.check_authentification()
     
     if not st.session_state.get('connected', False):
         st.title("Welcome to IPL Predictor 2025 🏏")
         st.write("Please sign in with your Google account to track your predictions!")
-        authenticator.login()
+        show_google_login()
         return
         
     # Ensure user info is processed
@@ -418,7 +454,8 @@ def main():
         st.write(f"Welcome back,")
         st.write(f"**{game_name}**")
         if st.button("Log Out"):
-            authenticator.logout()
+            st.session_state.clear()
+            st.query_params.clear()
             st.rerun()
         st.divider()
         
