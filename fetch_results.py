@@ -10,7 +10,7 @@ HEADERS = {
     "X-RapidAPI-Host": "cricbuzz-cricket.p.rapidapi.com"
 }
 try:
-    HEADERS["X-RapidAPI-Key"] = st.secrets["rapidapi"]["key"]
+    HEADERS["X-RapidAPI-Key"] = st.secrets["rapid_api"]["RAPIDAPI_KEY"]
 except (FileNotFoundError, KeyError, Exception):
     HEADERS["X-RapidAPI-Key"] = "df8b086635msh92585d5dcb5bc07p14a97ejsn4d3ca5d7d26c" # Fallback
 
