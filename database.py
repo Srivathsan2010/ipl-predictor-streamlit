@@ -2,14 +2,10 @@ import streamlit as st
 import gspread
 import os
 
-def get_client():
-    # Attempt to load credentials
+@st.cache_resource(ttl=600)
+def get_spreadsheet():
     credentials_dict = dict(st.secrets["gcp_service_account"])
     gc = gspread.service_account_from_dict(credentials_dict)
-    return gc
-
-def get_spreadsheet():
-    gc = get_client()
     url = st.secrets["gsheets"]["spreadsheet_url"]
     return gc.open_by_url(url)
 
