@@ -1,179 +1,161 @@
-import sqlite3
+import streamlit as st
+import gspread
 import os
 
-DB_FILE = "database.db" # Changed to relative path for cloud compatibility
-# If running locally, it'll create in the working directory
+def get_client():
+    # Attempt to load credentials
+    credentials_dict = dict(st.secrets["gcp_service_account"])
+    gc = gspread.service_account_from_dict(credentials_dict)
+    return gc
 
-def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    # Create users table
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            email TEXT PRIMARY KEY,
-            name TEXT,
-            game_name TEXT
-        )
-    ''')
+def get_spreadsheet():
+    gc = get_client()
+    url = st.secrets["gsheets"]["spreadsheet_url"]
+    return gc.open_by_url(url)
+
+def get_worksheet(name, headers):
+    sh = get_spreadsheet()
     try:
-        c.execute("ALTER TABLE users ADD COLUMN game_name TEXT")
-    except sqlite3.OperationalError:
-        pass
-    # Create predictions table
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS predictions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT,
-            match_id INTEGER,
-            winner TEXT,
-            orange_cap TEXT,
-            purple_cap TEXT,
-            multiplier_used BOOLEAN,
-            group_id INTEGER,
-            UNIQUE(email, match_id),
-            FOREIGN KEY (email) REFERENCES users (email)
-        )
-    ''')
-    conn.commit()
-    # Create match_results table for scoring
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS match_results (
-            match_id INTEGER PRIMARY KEY,
-            winner TEXT,
-            orange_cap TEXT,
-            orange_cap_rest TEXT,
-            orange_cap_2nd TEXT,
-            purple_cap TEXT,
-            purple_cap_rest TEXT,
-            oc_freehit_player TEXT,
-            pc_freehit_player TEXT,
-            group_id INTEGER
-        )
-    ''')
-    conn.commit()
-    conn.close()
+        return sh.worksheet(name)
+    except gspread.exceptions.WorksheetNotFound:
+        # Create it and add headers
+        ws = sh.add_worksheet(title=name, rows="1000", cols="20")
+        ws.append_row(headers)
+        return ws
+        
+def init_db():
+    get_worksheet("users", ["email", "name", "game_name"])
+    get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
+    get_worksheet("match_results", ["match_id", "winner", "orange_cap", "orange_cap_rest", "orange_cap_2nd", "purple_cap", "purple_cap_rest", "oc_freehit_player", "pc_freehit_player", "group_id"])
 
 def create_or_get_user(email, name):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("INSERT OR IGNORE INTO users (email, name) VALUES (?, ?)", (email, name))
-    conn.commit()
-    conn.close()
+    ws = get_worksheet("users", ["email", "name", "game_name"])
+    records = ws.get_all_records()
+    for row in records:
+        if str(row.get("email")) == str(email):
+            return  # User already exists
+    ws.append_row([email, name, ""])
 
 def save_prediction(email, match_id, winner, orange_cap, purple_cap, multiplier_used, group_id):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    # Upsert the prediction
-    c.execute('''
-        INSERT INTO predictions (email, match_id, winner, orange_cap, purple_cap, multiplier_used, group_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(email, match_id) DO UPDATE SET
-            winner=excluded.winner,
-            orange_cap=excluded.orange_cap,
-            purple_cap=excluded.purple_cap,
-            multiplier_used=excluded.multiplier_used,
-            group_id=excluded.group_id
-    ''', (email, match_id, winner, orange_cap, purple_cap, multiplier_used, group_id))
-    conn.commit()
-    conn.close()
+    ws = get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
+    mult_val = 1 if multiplier_used else 0
+    records = ws.get_all_records()
+    
+    found_row_idx = None
+    max_id = 0
+    for i, row in enumerate(records):
+        if str(row.get("email")) == str(email) and str(row.get("match_id")) == str(match_id):
+            found_row_idx = i + 2
+        try:
+            cur_id = int(row.get("id", 0))
+            if cur_id > max_id:
+                max_id = cur_id
+        except:
+            pass
+            
+    if found_row_idx:
+        cell_range = f'C{found_row_idx}:H{found_row_idx}'
+        ws.update(values=[[match_id, winner, orange_cap, purple_cap, mult_val, group_id]], range_name=cell_range)
+    else:
+        new_id = max_id + 1
+        ws.append_row([new_id, email, match_id, winner, orange_cap, purple_cap, mult_val, group_id])
 
 def get_user_predictions(email):
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute('''
-        SELECT match_id, winner, orange_cap, purple_cap, multiplier_used, group_id
-        FROM predictions
-        WHERE email = ?
-    ''', (email,))
-    rows = c.fetchall()
-    conn.close()
-    return [dict(row) for row in rows]
+    ws = get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
+    records = ws.get_all_records()
+    results = []
+    for row in records:
+        if str(row.get("email")) == str(email):
+            row["match_id"] = int(row.get("match_id", 0))
+            row["group_id"] = int(row.get("group_id", 0))
+            row["multiplier_used"] = int(row.get("multiplier_used", 0))
+            results.append(row)
+    return results
 
 def has_used_multiplier_in_group(email, group_id):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute('''
-        SELECT 1 FROM predictions
-        WHERE email = ? AND group_id = ? AND multiplier_used = 1
-    ''', (email, group_id))
-    row = c.fetchone()
-    conn.close()
-    return row is not None
+    preds = get_user_predictions(email)
+    for p in preds:
+        if str(p.get("group_id")) == str(group_id) and int(p.get("multiplier_used", 0)) == 1:
+            return True
+    return False
 
 def get_user(email):
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE email = ?", (email,))
-    row = c.fetchone()
-    conn.close()
-    return dict(row) if row else None
+    ws = get_worksheet("users", ["email", "name", "game_name"])
+    records = ws.get_all_records()
+    for row in records:
+        if str(row.get("email")) == str(email):
+            return row
+    return None
 
 def update_game_name(email, game_name):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute("UPDATE users SET game_name = ? WHERE email = ?", (game_name, email))
-    conn.commit()
-    conn.close()
+    ws = get_worksheet("users", ["email", "name", "game_name"])
+    records = ws.get_all_records()
+    for i, row in enumerate(records):
+        if str(row.get("email")) == str(email):
+            ws.update_cell(i + 2, 3, game_name)
+            break
 
 def get_all_users():
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("SELECT email, name, game_name FROM users WHERE game_name IS NOT NULL")
-    rows = c.fetchall()
-    conn.close()
-    return [dict(row) for row in rows]
+    ws = get_worksheet("users", ["email", "name", "game_name"])
+    records = ws.get_all_records()
+    return [row for row in records if str(row.get("game_name")).strip() != ""]
 
 def get_match_predictions(match_id):
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute('''
-        SELECT u.game_name, p.winner, p.orange_cap, p.purple_cap, p.multiplier_used
-        FROM predictions p
-        JOIN users u ON p.email = u.email
-        WHERE p.match_id = ? AND u.game_name IS NOT NULL
-    ''', (match_id,))
-    rows = c.fetchall()
-    conn.close()
-    return [dict(row) for row in rows]
+    ws_pred = get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
+    ws_users = get_worksheet("users", ["email", "name", "game_name"])
+    
+    preds = ws_pred.get_all_records()
+    users = ws_users.get_all_records()
+    
+    valid_users = {str(u["email"]): u["game_name"] for u in users if str(u.get("game_name")).strip() != ""}
+    
+    results = []
+    for p in preds:
+        email = str(p.get("email"))
+        if str(p.get("match_id")) == str(match_id) and email in valid_users:
+            results.append({
+                "game_name": valid_users[email],
+                "winner": p.get("winner"),
+                "orange_cap": p.get("orange_cap"),
+                "purple_cap": p.get("purple_cap"),
+                "multiplier_used": int(p.get("multiplier_used", 0))
+            })
+    return results
 
 def save_match_result(match_id, winner, orange_cap, orange_cap_rest, orange_cap_2nd, purple_cap, purple_cap_rest, oc_freehit_player, pc_freehit_player, group_id):
-    conn = sqlite3.connect(DB_FILE)
-    c = conn.cursor()
-    c.execute('''
-        INSERT INTO match_results (match_id, winner, orange_cap, orange_cap_rest, orange_cap_2nd, purple_cap, purple_cap_rest, oc_freehit_player, pc_freehit_player, group_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(match_id) DO UPDATE SET
-            winner=excluded.winner,
-            orange_cap=excluded.orange_cap,
-            orange_cap_rest=excluded.orange_cap_rest,
-            orange_cap_2nd=excluded.orange_cap_2nd,
-            purple_cap=excluded.purple_cap,
-            purple_cap_rest=excluded.purple_cap_rest,
-            oc_freehit_player=excluded.oc_freehit_player,
-            pc_freehit_player=excluded.pc_freehit_player,
-            group_id=excluded.group_id
-    ''', (match_id, winner, orange_cap, orange_cap_rest, orange_cap_2nd, purple_cap, purple_cap_rest, oc_freehit_player, pc_freehit_player, group_id))
-    conn.commit()
-    conn.close()
+    ws = get_worksheet("match_results", ["match_id", "winner", "orange_cap", "orange_cap_rest", "orange_cap_2nd", "purple_cap", "purple_cap_rest", "oc_freehit_player", "pc_freehit_player", "group_id"])
+    records = ws.get_all_records()
+    
+    found_row_idx = None
+    for i, row in enumerate(records):
+        if str(row.get("match_id")) == str(match_id):
+            found_row_idx = i + 2
+            break
+            
+    val_list = [match_id, winner, orange_cap, orange_cap_rest, orange_cap_2nd, purple_cap, purple_cap_rest, oc_freehit_player, pc_freehit_player, group_id]
+    
+    if found_row_idx:
+        ws.update(values=[val_list], range_name=f'A{found_row_idx}:J{found_row_idx}')
+    else:
+        ws.append_row(val_list)
 
 def get_all_match_results():
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("SELECT * FROM match_results")
-    rows = c.fetchall()
-    conn.close()
-    return {row['match_id']: dict(row) for row in rows}
+    ws = get_worksheet("match_results", ["match_id", "winner", "orange_cap", "orange_cap_rest", "orange_cap_2nd", "purple_cap", "purple_cap_rest", "oc_freehit_player", "pc_freehit_player", "group_id"])
+    records = ws.get_all_records()
+    
+    results = {}
+    for row in records:
+        m_id = int(row.get("match_id", 0))
+        row["match_id"] = m_id
+        results[m_id] = row
+    return results
 
 def get_all_predictions():
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    c = conn.cursor()
-    c.execute("SELECT * FROM predictions")
-    rows = c.fetchall()
-    conn.close()
-    return [dict(row) for row in rows]
+    ws = get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
+    records = ws.get_all_records()
+    
+    for row in records:
+        row["match_id"] = int(row.get("match_id", 0))
+        row["group_id"] = int(row.get("group_id", 0))
+        row["multiplier_used"] = int(row.get("multiplier_used", 0))
+    return records
