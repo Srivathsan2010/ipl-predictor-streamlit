@@ -9,33 +9,46 @@ def get_spreadsheet():
     url = st.secrets["gsheets"]["spreadsheet_url"]
     return gc.open_by_url(url)
 
-def get_worksheet(name, headers):
+@st.cache_resource(ttl=600)
+def get_worksheet_resource(name, headers_if_not_found=None):
     sh = get_spreadsheet()
     try:
         return sh.worksheet(name)
     except gspread.exceptions.WorksheetNotFound:
-        # Create it and add headers
-        ws = sh.add_worksheet(title=name, rows="1000", cols="20")
-        ws.append_row(headers)
-        return ws
-        
+        if headers_if_not_found:
+            ws = sh.add_worksheet(title=name, rows="1000", cols="20")
+            ws.append_row(headers_if_not_found)
+            return ws
+        raise
+
+@st.cache_data(ttl=15)
+def get_cached_records(sheet_name):
+    # This caches the fetched data as a python list for 15 seconds!
+    # Prevents looping functions from draining the 60 requests/minute quota.
+    ws = get_worksheet_resource(sheet_name)
+    return ws.get_all_records()
+
+def clear_db_cache():
+    get_cached_records.clear()
+
 def init_db():
-    get_worksheet("users", ["email", "name", "game_name"])
-    get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
-    get_worksheet("match_results", ["match_id", "winner", "orange_cap", "orange_cap_rest", "orange_cap_2nd", "purple_cap", "purple_cap_rest", "oc_freehit_player", "pc_freehit_player", "group_id"])
+    get_worksheet_resource("users", ["email", "name", "game_name"])
+    get_worksheet_resource("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
+    get_worksheet_resource("match_results", ["match_id", "winner", "orange_cap", "orange_cap_rest", "orange_cap_2nd", "purple_cap", "purple_cap_rest", "oc_freehit_player", "pc_freehit_player", "group_id"])
 
 def create_or_get_user(email, name):
-    ws = get_worksheet("users", ["email", "name", "game_name"])
-    records = ws.get_all_records()
+    ws = get_worksheet_resource("users")
+    records = get_cached_records("users")
     for row in records:
         if str(row.get("email")) == str(email):
             return  # User already exists
     ws.append_row([email, name, ""])
+    clear_db_cache()
 
 def save_prediction(email, match_id, winner, orange_cap, purple_cap, multiplier_used, group_id):
-    ws = get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
+    ws = get_worksheet_resource("predictions")
     mult_val = 1 if multiplier_used else 0
-    records = ws.get_all_records()
+    records = get_cached_records("predictions")
     
     found_row_idx = None
     max_id = 0
@@ -55,10 +68,10 @@ def save_prediction(email, match_id, winner, orange_cap, purple_cap, multiplier_
     else:
         new_id = max_id + 1
         ws.append_row([new_id, email, match_id, winner, orange_cap, purple_cap, mult_val, group_id])
+    clear_db_cache()
 
 def get_user_predictions(email):
-    ws = get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
-    records = ws.get_all_records()
+    records = get_cached_records("predictions")
     results = []
     for row in records:
         if str(row.get("email")) == str(email):
@@ -76,32 +89,28 @@ def has_used_multiplier_in_group(email, group_id):
     return False
 
 def get_user(email):
-    ws = get_worksheet("users", ["email", "name", "game_name"])
-    records = ws.get_all_records()
+    records = get_cached_records("users")
     for row in records:
         if str(row.get("email")) == str(email):
             return row
     return None
 
 def update_game_name(email, game_name):
-    ws = get_worksheet("users", ["email", "name", "game_name"])
-    records = ws.get_all_records()
+    ws = get_worksheet_resource("users")
+    records = get_cached_records("users")
     for i, row in enumerate(records):
         if str(row.get("email")) == str(email):
             ws.update_cell(i + 2, 3, game_name)
             break
+    clear_db_cache()
 
 def get_all_users():
-    ws = get_worksheet("users", ["email", "name", "game_name"])
-    records = ws.get_all_records()
+    records = get_cached_records("users")
     return [row for row in records if str(row.get("game_name")).strip() != ""]
 
 def get_match_predictions(match_id):
-    ws_pred = get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
-    ws_users = get_worksheet("users", ["email", "name", "game_name"])
-    
-    preds = ws_pred.get_all_records()
-    users = ws_users.get_all_records()
+    preds = get_cached_records("predictions")
+    users = get_cached_records("users")
     
     valid_users = {str(u["email"]): u["game_name"] for u in users if str(u.get("game_name")).strip() != ""}
     
@@ -119,8 +128,8 @@ def get_match_predictions(match_id):
     return results
 
 def save_match_result(match_id, winner, orange_cap, orange_cap_rest, orange_cap_2nd, purple_cap, purple_cap_rest, oc_freehit_player, pc_freehit_player, group_id):
-    ws = get_worksheet("match_results", ["match_id", "winner", "orange_cap", "orange_cap_rest", "orange_cap_2nd", "purple_cap", "purple_cap_rest", "oc_freehit_player", "pc_freehit_player", "group_id"])
-    records = ws.get_all_records()
+    ws = get_worksheet_resource("match_results")
+    records = get_cached_records("match_results")
     
     found_row_idx = None
     for i, row in enumerate(records):
@@ -134,10 +143,10 @@ def save_match_result(match_id, winner, orange_cap, orange_cap_rest, orange_cap_
         ws.update(values=[val_list], range_name=f'A{found_row_idx}:J{found_row_idx}')
     else:
         ws.append_row(val_list)
+    clear_db_cache()
 
 def get_all_match_results():
-    ws = get_worksheet("match_results", ["match_id", "winner", "orange_cap", "orange_cap_rest", "orange_cap_2nd", "purple_cap", "purple_cap_rest", "oc_freehit_player", "pc_freehit_player", "group_id"])
-    records = ws.get_all_records()
+    records = get_cached_records("match_results")
     
     results = {}
     for row in records:
@@ -147,8 +156,9 @@ def get_all_match_results():
     return results
 
 def get_all_predictions():
-    ws = get_worksheet("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
-    records = ws.get_all_records()
+    # Defensive deep copy logic to avoid mutability issues with Streamlit cache
+    import copy
+    records = copy.deepcopy(get_cached_records("predictions"))
     
     for row in records:
         row["match_id"] = int(row.get("match_id", 0))
