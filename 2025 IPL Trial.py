@@ -58,6 +58,7 @@ def load_and_process_data():
     matches_per_group = 14
     
     for index, match in enumerate(raw_data.get('schedule', [])):
+        date_obj = None
         try:
             date_obj = datetime.datetime.strptime(match['date_time(est)'], "%Y-%m-%d %H:%M")
             date_str = date_obj.strftime("%b %d, %I:%M %p") 
@@ -75,6 +76,7 @@ def load_and_process_data():
             "id": match['matchId'],
             "display_id": index + 1,
             "date": date_str,
+            "date_obj": date_obj,
             "team_a": t1_abbr,
             "team_b": t2_abbr,
             "venue": match['venue'],
@@ -246,6 +248,7 @@ def show_players():
 
 # --- 7. PAGE 5: PREDICTIONS LIST ---
 def show_predictions_list():
+    import zoneinfo
     st.title("🔮 Match Predictions")
     st.write("Select a match to see everyone's predictions.")
     
@@ -256,18 +259,42 @@ def show_predictions_list():
     else:
         visible_matches = []
 
+    ny_tz = zoneinfo.ZoneInfo("America/New_York")
+    current_time_ny = datetime.datetime.now(ny_tz).replace(tzinfo=None)
+
     for match in visible_matches:
         with st.container():
-            col1, col2, col3 = st.columns([1, 4, 3])
+            col1, col2, col3 = st.columns([1, 4, 4]) # adjusted col width
             with col1:
                 st.write(f"**#{match['display_id']}**")
             with col2:
                 st.write(f"**{match['team_a']} vs {match['team_b']}**")
                 st.caption(f"{match['date']} • {match['venue']}")
             with col3:
-                if st.button("View Predictions ➜", key=f"view_btn_{match['id']}"):
-                    st.session_state.selected_view_match = match
-                    st.rerun()
+                # Prediction unlock logic: unlocks 25 mins prior to EST match time
+                is_unlocked = True
+                unlock_delta = ""
+                
+                if match.get("date_obj"):
+                    unlock_time = match["date_obj"] - datetime.timedelta(minutes=25)
+                    if current_time_ny < unlock_time:
+                        is_unlocked = False
+                        
+                        diff = unlock_time - current_time_ny
+                        total_minutes = int(diff.total_seconds() // 60)
+                        if total_minutes > 1440:
+                            unlock_delta = f"{total_minutes // 1440} days"
+                        elif total_minutes > 60:
+                            unlock_delta = f"{total_minutes // 60} hours"
+                        else:
+                            unlock_delta = f"{total_minutes} mins"
+                            
+                if is_unlocked:
+                    if st.button("View Predictions ➜", key=f"view_btn_{match['id']}"):
+                        st.session_state.selected_view_match = match
+                        st.rerun()
+                else:
+                    st.button(f"🔒 Unlocks in {unlock_delta}", key=f"view_btn_locked_{match['id']}", disabled=True, help="Predictions are revealed 25 mins prior to match start.")
             st.divider()
 
 # --- 8. PAGE 6: MATCH PREDICTIONS VIEW ---

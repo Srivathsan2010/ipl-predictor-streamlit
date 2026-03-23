@@ -7,29 +7,11 @@ import database
 import streamlit as st
 
 HEADERS = {
-    "X-RapidAPI-Host": "cricbuzz-cricket.p.rapidapi.com"
+    "X-RapidAPI-Host": "cricbuzz-cricket.p.rapidapi.com",
+    "X-RapidAPI-Key": "df8b086635msh92585d5dcb5bc07p14a97ejsn4d3ca5d7d26c"
 }
-try:
-    HEADERS["X-RapidAPI-Key"] = st.secrets["rapid_api"]["RAPIDAPI_KEY"]
-except (FileNotFoundError, KeyError, Exception):
-    HEADERS["X-RapidAPI-Key"] = "df8b086635msh92585d5dcb5bc07p14a97ejsn4d3ca5d7d26c" # Fallback
 
 SCHEDULE_FILE = r"ipl-2025-squad-final_new.json"
-
-def get_matches_for_group(group_id):
-    with open(SCHEDULE_FILE, 'r') as f:
-        data = json.load(f)
-    
-    matches_per_group = 14
-    schedule = data.get('schedule', [])
-    
-    matches_in_group = []
-    for index, match in enumerate(schedule):
-        g_id = (index // matches_per_group) + 1
-        if g_id == group_id:
-            matches_in_group.append((match['matchId'], g_id))
-            
-    return matches_in_group
 
 def get_scorecard(match_id):
 	url = "https://cricbuzz-cricket.p.rapidapi.com/mcenter/v1/{}/hscard".format(match_id)
@@ -159,9 +141,17 @@ def fetch_all():
     matches_per_group = 14
     schedule = data.get('schedule', [])
     
+    # Check database to see which match results have already been fetched
+    existing_results = database.get_all_match_results()
+    
     for index, match in enumerate(schedule):
         match_id = match['matchId']
         group_id = (index // matches_per_group) + 1
+        
+        # Skip Cricbuzz API call if we already have the result in the database
+        if int(match_id) in existing_results:
+            continue
+            
         process_match(match_id, group_id)
 
 if __name__ == '__main__':
