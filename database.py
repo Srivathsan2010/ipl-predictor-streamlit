@@ -12,21 +12,32 @@ def get_spreadsheet():
 @st.cache_resource(ttl=600)
 def get_worksheet_resource(name, headers_if_not_found=None):
     sh = get_spreadsheet()
-    try:
-        return sh.worksheet(name)
-    except gspread.exceptions.WorksheetNotFound:
-        if headers_if_not_found:
-            ws = sh.add_worksheet(title=name, rows="1000", cols="20")
-            ws.append_row(headers_if_not_found)
-            return ws
-        raise
+    import time
+    for i in range(3):
+        try:
+            return sh.worksheet(name)
+        except gspread.exceptions.WorksheetNotFound:
+            if headers_if_not_found:
+                ws = sh.add_worksheet(title=name, rows="1000", cols="20")
+                ws.append_row(headers_if_not_found)
+                return ws
+            raise
+        except gspread.exceptions.APIError as e:
+            if i == 2:
+                raise Exception(f"Google Sheets API Error (Worksheet '{name}'): Code {getattr(e.response, 'status_code', 'Unknown')}, Message: {getattr(e.response, 'text', str(e))}")
+            time.sleep(2)
 
 @st.cache_data(ttl=15)
 def get_cached_records(sheet_name):
-    # This caches the fetched data as a python list for 15 seconds!
-    # Prevents looping functions from draining the 60 requests/minute quota.
     ws = get_worksheet_resource(sheet_name)
-    return ws.get_all_records()
+    import time
+    for i in range(3):
+        try:
+            return ws.get_all_records()
+        except gspread.exceptions.APIError as e:
+            if i == 2:
+                raise Exception(f"Google Sheets API Fetch Error (Records '{sheet_name}'): Code {getattr(e.response, 'status_code', 'Unknown')}, Message: {getattr(e.response, 'text', str(e))}")
+            time.sleep(2)
 
 def clear_db_cache():
     get_cached_records.clear()
