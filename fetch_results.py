@@ -11,8 +11,6 @@ HEADERS = {
     "X-RapidAPI-Key": "df8b086635msh92585d5dcb5bc07p14a97ejsn4d3ca5d7d26c"
 }
 
-SCHEDULE_FILE = r"ipl-2025-squad-final_new.json"
-
 def get_scorecard(match_id):
 	url = "https://cricbuzz-cricket.p.rapidapi.com/mcenter/v1/{}/hscard".format(match_id)
 	response = requests.get(url, headers=HEADERS)
@@ -21,7 +19,7 @@ def get_scorecard(match_id):
 	else:
 		return {}
 
-def process_match(match_id, group_id):
+def process_match(match_id, group_id, season):
     data = get_scorecard(match_id)
     if not data or 'matchHeader' not in data:
         print(f"Skipping match {match_id} (No scorecard logic yet)")
@@ -43,7 +41,8 @@ def process_match(match_id, group_id):
             orange_cap="", orange_cap_rest="[]", orange_cap_2nd="[]",
             purple_cap="", purple_cap_rest="[]",
             oc_freehit_player="", pc_freehit_player="",
-            group_id=group_id
+            group_id=group_id,
+            season=season
         )
         return
 
@@ -129,13 +128,14 @@ def process_match(match_id, group_id):
         purple_cap_rest=purple_cap_rest,
         oc_freehit_player=oc_freehit,
         pc_freehit_player=pc_freehit,
-        group_id=group_id
+        group_id=group_id,
+        season=season
     )
     print(f"Processed results for match {match_id} - Winner: {winner}")
 
-def fetch_all():
+def fetch_all(season, schedule_file):
     print("Fetching matches from schedule...")
-    with open(SCHEDULE_FILE, 'r') as f:
+    with open(schedule_file, 'r') as f:
         data = json.load(f)
     
     matches_per_group = 14
@@ -152,7 +152,7 @@ def fetch_all():
         if int(match_id) in existing_results:
             continue
             
-        process_match(match_id, group_id)
+        process_match(match_id, group_id, season)
 
 if __name__ == '__main__':
-    fetch_all()
+    fetch_all("2026", "ipl-2026-squad-final.json")

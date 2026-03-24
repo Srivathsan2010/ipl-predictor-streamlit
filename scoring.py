@@ -1,14 +1,12 @@
 import json
 import database
 
-SCHEDULE_FILE = "ipl-2025-squad-final_new.json"
-
-def get_schedule_ordered():
-    with open(SCHEDULE_FILE, 'r') as f:
+def get_schedule_ordered(schedule_file):
+    with open(schedule_file, 'r') as f:
         data = json.load(f)
     return data.get('schedule', [])
 
-def calculate_scores():
+def calculate_scores(schedule_file):
     users_scores = {}
     users_streaks = {}
     users_freehits_oc = {}
@@ -22,7 +20,7 @@ def calculate_scores():
         users_freehits_oc[email] = False
         users_freehits_pc[email] = False
 
-    schedule = get_schedule_ordered()
+    schedule = get_schedule_ordered(schedule_file)
     match_results = database.get_all_match_results()
     all_preds = database.get_all_predictions()
     
@@ -142,6 +140,6 @@ def calculate_scores():
     return users_scores, user_match_scores
 
 if __name__ == '__main__':
-    scores, match_scores = calculate_scores()
+    scores, match_scores = calculate_scores("ipl-2026-squad-final.json")
     for email, score in scores.items():
         print(f"{email}: {score} pts")

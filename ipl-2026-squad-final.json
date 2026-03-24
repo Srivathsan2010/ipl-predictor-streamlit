@@ -1,0 +1,442 @@
+{
+    "squads": [
+        {
+            "team_name": "Chennai Super Kings",
+            "players": [
+                "Ruturaj Gaikwad",
+                "Dewald Brevis",
+                "Ayush Mhatre",
+                "Matthew Short",
+                "Sarfaraz Khan",
+                "Shivam Dube",
+                "Ramakrishna Ghosh",
+                "Jamie Overton",
+                "Anshul Kamboj",
+                "Zakary Foulkes",
+                "MS Dhoni",
+                "Urvil Patel",
+                "Sanju Samson",
+                "Kartik Sharma",
+                "Shreyas Gopal",
+                "Khaleel Ahmed",
+                "Gurjapneet Singh",
+                "Mukesh Choudhary",
+                "Noor Ahmad",
+                "Prashant Veer",
+                "Akeal Hosein",
+                "Matt Henry",
+                "Rahul Chahar"
+            ]
+        },
+        {
+            "team_name": "Delhi Capitals",
+            "players": [
+                "Karun Nair",
+                "Nitish Rana",
+                "Sameer Rizvi",
+                "David Miller",
+                "Ben Duckett",
+                "Pathum Nissanka",
+                "Sahil Parakh",
+                "Prithvi Shaw",
+                "Ashutosh Sharma",
+                "Axar Patel",
+                "Ajay Jadav Mandal",
+                "Madhav Tiwari",
+                "Tripurana Vijay",
+                "Auqib Nabi Dar",
+                "Abishek Porel",
+                "KL Rahul",
+                "Tristan Stubbs",
+                "Dushmantha Chameera",
+                "Kuldeep Yadav",
+                "Mukesh Kumar",
+                "T Natarajan",
+                "Vipraj Nigam",
+                "Mitchell Starc",
+                "Lungi Ngidi",
+                "Kyle Jamieson"
+            ]
+        },
+        {
+            "team_name": "Gujarat Titans",
+            "players": [
+                "Shubman Gill",
+                "M Shahrukh Khan",
+                "Sai Sudharsan",
+                "Nishant Sindhu",
+                "Rashid Khan",
+                "Manav Suthar",
+                "Rahul Tewatia",
+                "Washington Sundar",
+                "Arshad Khan",
+                "Ravisrinivasan Sai Kishore",
+                "Jason Holder",
+                "Anuj Rawat",
+                "Jos Buttler",
+                "Kumar Kushagra",
+                "Glenn Phillips",
+                "Tom Banton",
+                "Gurnoor Brar",
+                "Mohammed Siraj",
+                "Prasidh Krishna",
+                "Kagiso Rabada",
+                "Jayant Yadav",
+                "Ishant Sharma",
+                "Ashok Sharma",
+                "Prithvi Raj Yarra",
+                "Luke Wood"
+            ]
+        },
+        {
+            "team_name": "Kolkata Knight Riders",
+            "players": [
+                "Ajinkya Rahane",
+                "Manish Pandey",
+                "Rovman Powell",
+                "Angkrish Raghuvanshi",
+                "Rinku Singh",
+                "Finn Allen",
+                "Rahul Tripathi",
+                "Sarthak Ranjan",
+                "Ramandeep Singh",
+                "Anukul Roy",
+                "Cameron Green",
+                "Rachin Ravindra",
+                "Sunil Narine",
+                "Daksh Kamra",
+                "Tim Seifert",
+                "Tejasvi Dahiya",
+                "Vaibhav Arora",
+                "Umran Malik",
+                "Varun Chakaravarthy",
+                "Prashant Solanki",
+                "Kartik Tyagi",
+                "Matheesha Pathirana",
+                "Blessing Muzarabani",
+                "Saurabh Dubey"
+            ]
+        },
+        {
+            "team_name": "Lucknow Super Giants",
+            "players": [
+                "Himmat Singh",
+                "Aiden Markram",
+                "Akshat Raghuwanshi",
+                "Abdul Samad",
+                "Ayush Badoni",
+                "Arshin Kulkarni",
+                "Mitchell Marsh",
+                "Shahbaz Ahmed",
+                "Arjun Sachin Tendulkar",
+                "Wanindu Hasaranga",
+                "Rishabh Pant",
+                "Matthew Breetzke",
+                "Nicholas Pooran",
+                "Mukul Choudhary",
+                "Josh Inglis",
+                "Akash Maharaj Singh",
+                "Avesh Khan",
+                "Mohammed Shami",
+                "Prince Yadav",
+                "Mohsin Khan",
+                "Digvesh Singh Rathi",
+                "Manimaran Siddharth",
+                "Mayank Prabhu Yadav",
+                "Anrich Nortje",
+                "Naman Tiwari"
+            ]
+        },
+        {
+            "team_name": "Mumbai Indians",
+            "players": [
+                "Naman Dhir",
+                "Rohit Sharma",
+                "Suryakumar Yadav",
+                "Tilak Varma",
+                "Danish Malewar",
+                "Sherfane Rutherford",
+                "Hardik Pandya",
+                "Raj Bawa",
+                "Will Jacks",
+                "Mayank Rawat",
+                "Corbin Bosch",
+                "Mitchell Santner",
+                "Shardul Thakur",
+                "Atharva Ankolekar",
+                "Robin Minz",
+                "Ryan Rickelton",
+                "Quinton de Kock",
+                "Trent Boult",
+                "Ashwani Kumar",
+                "Jasprit Bumrah",
+                "Deepak Chahar",
+                "Mayank Markande",
+                "AM Ghazanfar",
+                "Raghu Sharma",
+                "Mohammed Salahuddin Izhar"
+            ]
+        },
+        {
+            "team_name": "Punjab Kings",
+            "players": [
+                "Shreyas Iyer",
+                "Priyansh Arya",
+                "Pyla Avinash",
+                "Harnoor Singh",
+                "Nehal Wadhera",
+                "Mitchell Owen",
+                "Musheer Khan",
+                "Shashank Singh",
+                "Marcus Stoinis",
+                "Suryansh Shedge",
+                "Cooper Connolly",
+                "Azmatullah Omarzai",
+                "Marco Jansen",
+                "Praveen Dubey",
+                "Prabhsimran Singh",
+                "Vishnu Vinod",
+                "Arshdeep Singh",
+                "Xavier Bartlett",
+                "Yuzvendra Chahal",
+                "Lockie Ferguson",
+                "Harpreet Brar",
+                "Vijaykumar Vyshak",
+                "Yash Thakur",
+                "Ben Dwarshuis",
+                "Vishal Nishad"
+            ]
+        },
+        {
+            "team_name": "Rajasthan Royals",
+            "players": [
+                "Shubham Dubey",
+                "Shimron Hetmyer",
+                "Yashasvi Jaiswal",
+                "Vaibhav Sooryavanshi",
+                "Aman Rao Perala",
+                "Riyan Parag",
+                "Dasun Shanaka",
+                "Ravindra Jadeja",
+                "Dhruv Jurel",
+                "Lhuan-dre Pretorius",
+                "Donovan Ferreira",
+                "Ravi Singh",
+                "Jofra Archer",
+                "Nandre Burger",
+                "Tushar Deshpande",
+                "Kwena Maphaka",
+                "Sandeep Sharma",
+                "Yudhvir Singh Charak",
+                "Vignesh Puthur",
+                "Yash Raj Punja",
+                "Sushant Mishra",
+                "Ravi Bishnoi",
+                "Brijesh Sharma",
+                "Adam Milne",
+                "Kuldeep Sen"
+            ]
+        },
+        {
+            "team_name": "Royal Challengers Bengaluru",
+            "players": [
+                "Rajat Patidar",
+                "Tim David",
+                "Virat Kohli",
+                "Devdutt Padikkal",
+                "Jacob Bethell",
+                "Krunal Pandya",
+                "Venkatesh Iyer",
+                "Vihaan Malhotra",
+                "Romario Shepherd",
+                "Mangesh Yadav",
+                "Kanishk Chouhan",
+                "Satvik Deswal",
+                "Philip Salt",
+                "Jitesh Sharma",
+                "Jordan Cox",
+                "Abhinandan Singh",
+                "Josh Hazlewood",
+                "Rasikh Salam Dar",
+                "Bhuvneshwar Kumar",
+                "Suyash Sharma",
+                "Swapnil Singh",
+                "Yash Dayal",
+                "Nuwan Thushara",
+                "Jacob Duffy",
+                "Vicky Ostwal"
+            ]
+        },
+        {
+            "team_name": "Sunrisers Hyderabad",
+            "players": [
+                "Travis Head",
+                "Smaran Ravichandran",
+                "Aniket Verma",
+                "Abhishek Sharma",
+                "Kamindu Mendis",
+                "Nitish Kumar Reddy",
+                "Liam Livingstone",
+                "Harsh Dubey",
+                "Shivang Kumar",
+                "Ishan Kishan",
+                "Heinrich Klaasen",
+                "Salil Arora",
+                "Brydon Carse",
+                "Pat Cummins",
+                "Eshan Malinga",
+                "Jaydev Unadkat",
+                "Harshal Patel",
+                "Zeeshan Ansari",
+                "Sakib Hussain",
+                "Onkar Tukaram Tarmale",
+                "Amit Kumar",
+                "Praful Hinge",
+                "Krains Fuletra",
+                "Shivam Mavi"
+            ]
+        }
+    ],
+    "schedule": [
+        {
+            "matchId": 149618,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "Bengaluru",
+            "date_time(est)": "2026-03-28 10:00"
+        },
+        {
+            "matchId": 149629,
+            "team1": "Mumbai Indians",
+            "team2": "Kolkata Knight Riders",
+            "venue": "Mumbai",
+            "date_time(est)": "2026-03-29 10:00"
+        },
+        {
+            "matchId": 149640,
+            "team1": "Rajasthan Royals",
+            "team2": "Chennai Super Kings",
+            "venue": "Guwahati",
+            "date_time(est)": "2026-03-30 10:00"
+        },
+        {
+            "matchId": 149651,
+            "team1": "Punjab Kings",
+            "team2": "Gujarat Titans",
+            "venue": "New Chandigarh",
+            "date_time(est)": "2026-03-31 10:00"
+        },
+        {
+            "matchId": 149662,
+            "team1": "Lucknow Super Giants",
+            "team2": "Delhi Capitals",
+            "venue": "Lucknow",
+            "date_time(est)": "2026-04-01 10:00"
+        },
+        {
+            "matchId": 149673,
+            "team1": "Kolkata Knight Riders",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "Kolkata",
+            "date_time(est)": "2026-04-02 10:00"
+        },
+        {
+            "matchId": 149684,
+            "team1": "Chennai Super Kings",
+            "team2": "Punjab Kings",
+            "venue": "Chennai",
+            "date_time(est)": "2026-04-03 10:00"
+        },
+        {
+            "matchId": 149695,
+            "team1": "Delhi Capitals",
+            "team2": "Mumbai Indians",
+            "venue": "Delhi",
+            "date_time(est)": "2026-04-04 06:00"
+        },
+        {
+            "matchId": 149699,
+            "team1": "Gujarat Titans",
+            "team2": "Rajasthan Royals",
+            "venue": "Ahmedabad",
+            "date_time(est)": "2026-04-04 10:00"
+        },
+        {
+            "matchId": 149710,
+            "team1": "Sunrisers Hyderabad",
+            "team2": "Lucknow Super Giants",
+            "venue": "Hyderabad",
+            "date_time(est)": "2026-04-05 06:00"
+        },
+        {
+            "matchId": 149721,
+            "team1": "Royal Challengers Bengaluru",
+            "team2": "Chennai Super Kings",
+            "venue": "Bengaluru",
+            "date_time(est)": "2026-04-05 10:00"
+        },
+        {
+            "matchId": 149732,
+            "team1": "Kolkata Knight Riders",
+            "team2": "Punjab Kings",
+            "venue": "Kolkata",
+            "date_time(est)": "2026-04-06 10:00"
+        },
+        {
+            "matchId": 149743,
+            "team1": "Rajasthan Royals",
+            "team2": "Mumbai Indians",
+            "venue": "Guwahati",
+            "date_time(est)": "2026-04-07 10:00"
+        },
+        {
+            "matchId": 149746,
+            "team1": "Delhi Capitals",
+            "team2": "Gujarat Titans",
+            "venue": "Delhi",
+            "date_time(est)": "2026-04-08 10:00"
+        },
+        {
+            "matchId": 149757,
+            "team1": "Kolkata Knight Riders",
+            "team2": "Lucknow Super Giants",
+            "venue": "Kolkata",
+            "date_time(est)": "2026-04-09 10:00"
+        },
+        {
+            "matchId": 149768,
+            "team1": "Rajasthan Royals",
+            "team2": "Royal Challengers Bengaluru",
+            "venue": "Guwahati",
+            "date_time(est)": "2026-04-10 10:00"
+        },
+        {
+            "matchId": 149779,
+            "team1": "Punjab Kings",
+            "team2": "Sunrisers Hyderabad",
+            "venue": "New Chandigarh",
+            "date_time(est)": "2026-04-11 06:00"
+        },
+        {
+            "matchId": 149790,
+            "team1": "Chennai Super Kings",
+            "team2": "Delhi Capitals",
+            "venue": "Chennai",
+            "date_time(est)": "2026-04-11 10:00"
+        },
+        {
+            "matchId": 149801,
+            "team1": "Lucknow Super Giants",
+            "team2": "Gujarat Titans",
+            "venue": "Lucknow",
+            "date_time(est)": "2026-04-12 06:00"
+        },
+        {
+            "matchId": 149812,
+            "team1": "Mumbai Indians",
+            "team2": "Royal Challengers Bengaluru",
+            "venue": "Mumbai",
+            "date_time(est)": "2026-04-12 10:00"
+        }
+    ]
+}

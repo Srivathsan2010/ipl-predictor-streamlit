@@ -44,8 +44,8 @@ def clear_db_cache():
 
 def init_db():
     get_worksheet_resource("users", ["email", "name", "game_name"])
-    get_worksheet_resource("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id"])
-    get_worksheet_resource("match_results", ["match_id", "winner", "orange_cap", "orange_cap_rest", "orange_cap_2nd", "purple_cap", "purple_cap_rest", "oc_freehit_player", "pc_freehit_player", "group_id"])
+    get_worksheet_resource("predictions", ["id", "email", "match_id", "winner", "orange_cap", "purple_cap", "multiplier_used", "group_id", "season"])
+    get_worksheet_resource("match_results", ["match_id", "winner", "orange_cap", "orange_cap_rest", "orange_cap_2nd", "purple_cap", "purple_cap_rest", "oc_freehit_player", "pc_freehit_player", "group_id", "season"])
 
 def create_or_get_user(email, name):
     ws = get_worksheet_resource("users")
@@ -56,7 +56,7 @@ def create_or_get_user(email, name):
     ws.append_row([email, name, ""])
     clear_db_cache()
 
-def save_prediction(email, match_id, winner, orange_cap, purple_cap, multiplier_used, group_id):
+def save_prediction(email, match_id, winner, orange_cap, purple_cap, multiplier_used, group_id, season):
     ws = get_worksheet_resource("predictions")
     mult_val = 1 if multiplier_used else 0
     records = get_cached_records("predictions")
@@ -74,26 +74,29 @@ def save_prediction(email, match_id, winner, orange_cap, purple_cap, multiplier_
             pass
             
     if found_row_idx:
-        cell_range = f'C{found_row_idx}:H{found_row_idx}'
-        ws.update(values=[[match_id, winner, orange_cap, purple_cap, mult_val, group_id]], range_name=cell_range)
+        cell_range = f'C{found_row_idx}:I{found_row_idx}'
+        ws.update(values=[[match_id, winner, orange_cap, purple_cap, mult_val, group_id, season]], range_name=cell_range)
     else:
         new_id = max_id + 1
-        ws.append_row([new_id, email, match_id, winner, orange_cap, purple_cap, mult_val, group_id])
+        ws.append_row([new_id, email, match_id, winner, orange_cap, purple_cap, mult_val, group_id, season])
     clear_db_cache()
 
-def get_user_predictions(email):
+def get_user_predictions(email, season=None):
     records = get_cached_records("predictions")
     results = []
     for row in records:
         if str(row.get("email")) == str(email):
+            row_season = str(row.get("season", "2025"))
+            if season and row_season != str(season):
+                continue
             row["match_id"] = int(row.get("match_id", 0))
             row["group_id"] = int(row.get("group_id", 0))
             row["multiplier_used"] = int(row.get("multiplier_used", 0))
             results.append(row)
     return results
 
-def has_used_multiplier_in_group(email, group_id):
-    preds = get_user_predictions(email)
+def has_used_multiplier_in_group(email, group_id, season=None):
+    preds = get_user_predictions(email, season=season)
     for p in preds:
         if str(p.get("group_id")) == str(group_id) and int(p.get("multiplier_used", 0)) == 1:
             return True
@@ -138,7 +141,7 @@ def get_match_predictions(match_id):
             })
     return results
 
-def save_match_result(match_id, winner, orange_cap, orange_cap_rest, orange_cap_2nd, purple_cap, purple_cap_rest, oc_freehit_player, pc_freehit_player, group_id):
+def save_match_result(match_id, winner, orange_cap, orange_cap_rest, orange_cap_2nd, purple_cap, purple_cap_rest, oc_freehit_player, pc_freehit_player, group_id, season):
     ws = get_worksheet_resource("match_results")
     records = get_cached_records("match_results")
     
@@ -148,10 +151,10 @@ def save_match_result(match_id, winner, orange_cap, orange_cap_rest, orange_cap_
             found_row_idx = i + 2
             break
             
-    val_list = [match_id, winner, orange_cap, orange_cap_rest, orange_cap_2nd, purple_cap, purple_cap_rest, oc_freehit_player, pc_freehit_player, group_id]
+    val_list = [match_id, winner, orange_cap, orange_cap_rest, orange_cap_2nd, purple_cap, purple_cap_rest, oc_freehit_player, pc_freehit_player, group_id, season]
     
     if found_row_idx:
-        ws.update(values=[val_list], range_name=f'A{found_row_idx}:J{found_row_idx}')
+        ws.update(values=[val_list], range_name=f'A{found_row_idx}:K{found_row_idx}')
     else:
         ws.append_row(val_list)
     clear_db_cache()

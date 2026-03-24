@@ -9,13 +9,19 @@ import fetch_results
 import scoring
 
 # --- 1. SETUP & CONFIGURATION ---
-st.set_page_config(page_title="IPL Predictor 2025", layout="centered", page_icon="🏏")
+st.set_page_config(page_title="IPL Predictor", layout="centered", page_icon="🏏")
 
 # Initialize SQLite database
 database.init_db()
 
+if 'selected_season' not in st.session_state:
+    st.session_state.selected_season = "2026"
+
 # FILE CONFIGURATION
-JSON_FILE_PATH = "ipl-2025-squad-final_new.json"
+if st.session_state.selected_season == "2025":
+    JSON_FILE_PATH = "ipl-2025-squad-final_new.json"
+else:
+    JSON_FILE_PATH = "ipl-2026-squad-final.json"
 
 # --- GOOGLE AUTHENTICATION ---
 CLIENT_ID = None
@@ -97,10 +103,10 @@ if 'nav_selection' not in st.session_state:
 # --- 3. PAGE 1: FIXTURE LIST ---
 def show_fixture_list(user_email):
     # Fetch previously predicted matches from DB
-    user_preds = database.get_user_predictions(user_email)
+    user_preds = database.get_user_predictions(user_email, season=st.session_state.selected_season)
     predicted_match_ids = {p['match_id']: p for p in user_preds}
 
-    st.title("📅 IPL 2025 Fixtures")
+    st.title(f"📅 IPL {st.session_state.selected_season} Fixtures")
     st.write("Select a match to predict.")
     
     if MATCHES:
@@ -134,10 +140,10 @@ def show_prediction_form(user_email):
     team_b_players = SQUADS.get(match['team_b'], [])
     all_match_players = ["-- Select Player --"] + sorted(team_a_players + team_b_players)
     
-    is_2x_locked = database.has_used_multiplier_in_group(user_email, group_id)
+    is_2x_locked = database.has_used_multiplier_in_group(user_email, group_id, season=st.session_state.selected_season)
     
     # Check if a prediction already exists to pre-fill the form
-    existing_preds = database.get_user_predictions(user_email)
+    existing_preds = database.get_user_predictions(user_email, season=st.session_state.selected_season)
     existing_pred = next((p for p in existing_preds if p['match_id'] == match['id']), None)
     
     default_winner_idx = 0
@@ -199,7 +205,8 @@ def show_prediction_form(user_email):
                     orange_cap=oc_pick,
                     purple_cap=pc_pick,
                     multiplier_used=use_2x,
-                    group_id=group_id
+                    group_id=group_id,
+                    season=st.session_state.selected_season
                 )
                 st.success("✅ Saved! Click 'Back' to return.")
 
@@ -211,8 +218,8 @@ def show_profile(user_email, user_name, game_name):
     st.write(f"**Email:** {user_email}")
     st.divider()
     
-    st.subheader("📊 My Recent Predictions")
-    preds = database.get_user_predictions(user_email)
+    st.subheader(f"📊 My Recent Predictions ({st.session_state.selected_season})")
+    preds = database.get_user_predictions(user_email, season=st.session_state.selected_season)
     
     if not preds:
         st.info("You haven't made any predictions yet. Head to the Fixtures tab to get started!")
@@ -337,11 +344,11 @@ def show_leaderboard():
     with col2:
         if st.button("🔄 Fetch Latest Results"):
             with st.spinner("Fetching matches from Cricbuzz..."):
-                fetch_results.fetch_all()
+                fetch_results.fetch_all(st.session_state.selected_season, JSON_FILE_PATH)
             st.success("Results updated!")
             st.rerun()
 
-    scores, match_scores = scoring.calculate_scores()
+    scores, match_scores = scoring.calculate_scores(JSON_FILE_PATH)
     
     if not scores:
         st.info("No scores available yet.")
@@ -377,7 +384,7 @@ def show_admin_dashboard():
     
     # Needs to fetch all matches
     from scoring import calculate_scores
-    scores, match_scores = calculate_scores()
+    scores, match_scores = calculate_scores(JSON_FILE_PATH)
     
     # get match results and users
     match_results = database.get_all_match_results() # {match_id: dict()}
@@ -440,7 +447,7 @@ def show_admin_dashboard():
 def main():
     # If the user is missing the connected flag or payload
     if not st.session_state.get('connected', False):
-        st.title("Welcome to IPL Predictor 2025 🏏")
+        st.title("Welcome to IPL Predictor 🏏")
         st.write("Please sign in with your Google account to track your predictions!")
         
         # Render the custom Streamlit Google Sign-In Component
@@ -469,7 +476,7 @@ def main():
 
     # User registration: force users to enter a Game Name
     if not user_data or not user_data.get('game_name'):
-        st.title("Welcome to IPL Predictor 2025 🏏")
+        st.title("Welcome to IPL Predictor 🏏")
         st.write("Please choose a Game Name to complete your registration!")
         with st.form("game_name_form"):
             new_game_name = st.text_input("Enter Game Name")
@@ -504,7 +511,12 @@ def main():
             st.rerun()
             
         st.divider()
-        st.write("### 🏏 IPL 2025")
+        season_choice = st.selectbox("Select Season", ["2026", "2025"], index=0 if st.session_state.selected_season == "2026" else 1)
+        if season_choice != st.session_state.selected_season:
+            st.session_state.selected_season = season_choice
+            st.rerun()
+            
+        st.write(f"### 🏏 IPL {st.session_state.selected_season}")
         
         if st.button("📅 Fixtures", use_container_width=True, type="primary" if st.session_state.nav_selection == "📅 Fixtures" else "secondary"):
             st.session_state.nav_selection = "📅 Fixtures"
