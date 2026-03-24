@@ -89,10 +89,11 @@ def get_user_predictions(email, season=None):
             row_season = str(row.get("season", "2025"))
             if season and row_season != str(season):
                 continue
-            row["match_id"] = int(row.get("match_id", 0))
-            row["group_id"] = int(row.get("group_id", 0))
-            row["multiplier_used"] = int(row.get("multiplier_used", 0))
-            results.append(row)
+            new_row = dict(row)
+            new_row["match_id"] = int(row.get("match_id", 0))
+            new_row["group_id"] = int(row.get("group_id", 0))
+            new_row["multiplier_used"] = int(row.get("multiplier_used", 0))
+            results.append(new_row)
     return results
 
 def has_used_multiplier_in_group(email, group_id, season=None):
@@ -164,9 +165,10 @@ def get_all_match_results():
     
     results = {}
     for row in records:
+        new_row = dict(row)
         m_id = int(row.get("match_id", 0))
-        row["match_id"] = m_id
-        results[m_id] = row
+        new_row["match_id"] = m_id
+        results[m_id] = new_row
     return results
 
 def get_all_predictions():
