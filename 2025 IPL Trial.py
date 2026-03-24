@@ -53,11 +53,20 @@ def load_and_process_data():
     with open(JSON_FILE_PATH, 'r') as f:
         raw_data = json.load(f)
         
+    TEAM_ABBR_FALLBACK = {
+        "Chennai Super Kings": "CSK", "Delhi Capitals": "DC", "Gujarat Titans": "GT",
+        "Kolkata Knight Riders": "KKR", "Lucknow Super Giants": "LSG", "Mumbai Indians": "MI",
+        "Punjab Kings": "PBKS", "Rajasthan Royals": "RR", "Royal Challengers Bengaluru": "RCB",
+        "Sunrisers Hyderabad": "SRH"
+    }
+
     team_map = {} 
     squad_map = {} 
     for team in raw_data.get('squads', []):
-        team_map[team['team_name']] = team['team_abbr']
-        squad_map[team['team_abbr']] = sorted(team['players'])
+        t_name = team['team_name']
+        abbr = team.get('team_abbr') or TEAM_ABBR_FALLBACK.get(t_name) or "".join([w[0] for w in t_name.split()])[:3].upper()
+        team_map[t_name] = abbr
+        squad_map[abbr] = sorted(team['players'])
         
     processed_matches = []
     matches_per_group = 14
