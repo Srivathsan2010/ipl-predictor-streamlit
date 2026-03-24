@@ -438,16 +438,7 @@ def show_admin_dashboard():
 
 # --- 9. MAIN CONTROLLER ---
 def main():
-    # Session Persistence Tab Sync Strategy: 
-    # Use st.query_params to carry session to new tabs and survive component cookie delays
-
-    if "user_email" in st.query_params and not st.session_state.get('connected'):
-        st.session_state["connected"] = True
-        st.session_state["user_info"] = {
-            "email": st.query_params.get("user_email"),
-            "name": st.query_params.get("user_name", "Unknown User")
-        }
-    
+    # If the user is missing the connected flag or payload
     if not st.session_state.get('connected', False):
         st.title("Welcome to IPL Predictor 2025 🏏")
         st.write("Please sign in with your Google account to track your predictions!")
@@ -461,9 +452,8 @@ def main():
                 "email": token_payload.get('email', 'unknown@example.com'),
                 "name": token_payload.get('name', 'Unknown User')
             }
-            # Sync to query params so new tabs can share session
-            st.query_params["user_email"] = token_payload.get('email', 'unknown@example.com')
-            st.query_params["user_name"] = token_payload.get('name', 'Unknown User')
+            # Clears any orphaned query parameters to ensure pure session
+            st.query_params.clear()
             st.rerun()
             
         return
@@ -472,11 +462,6 @@ def main():
     user_info = st.session_state.get('user_info', {})
     user_email = user_info.get('email', 'unknown@example.com')
     user_name = user_info.get('name', 'Unknown User')
-    
-    # Sync to query params so new tabs / page reloads keep the session without waiting for cookies
-    if st.query_params.get("user_email") != user_email:
-        st.query_params["user_email"] = user_email
-        st.query_params["user_name"] = user_name
     
     # Preload user into DB
     database.create_or_get_user(user_email, user_name)
