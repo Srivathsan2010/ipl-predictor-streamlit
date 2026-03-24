@@ -38,7 +38,6 @@ if not CLIENT_ID:
     st.stop()
 
 # --- 2. DATA LOADING FUNCTION ---
-@st.cache_data
 def load_and_process_data():
     if not os.path.exists(JSON_FILE_PATH):
         st.error(f"❌ Error: The file '{JSON_FILE_PATH}' was not found.")
