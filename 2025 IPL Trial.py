@@ -118,6 +118,10 @@ def show_fixture_list(user_email):
     st.title(f"📅 IPL {st.session_state.selected_season} Fixtures")
     st.write("Select a match to predict.")
     
+    import zoneinfo
+    ny_tz = zoneinfo.ZoneInfo("America/New_York")
+    current_time_ny = datetime.datetime.now(ny_tz).replace(tzinfo=None)
+    
     if MATCHES:
         unique_groups = sorted(list(set(m['group'] for m in MATCHES)))
         selected_group = st.selectbox("Filter by Group", unique_groups, format_func=lambda x: "Playoffs" if x == 6 else f"Group {x}")
@@ -126,8 +130,18 @@ def show_fixture_list(user_email):
         visible_matches = []
 
     for match in visible_matches:
+        # Prediction lock logic: 30 mins prior to match start for 2026
+        is_locked_for_pred = False
+        lock_msg = "Predict ➜"
+        m_date_obj = match.get("date_obj")
+        if st.session_state.selected_season == "2026" and isinstance(m_date_obj, datetime.datetime):
+            pred_lock_time = m_date_obj - datetime.timedelta(minutes=30)
+            if current_time_ny >= pred_lock_time:
+                is_locked_for_pred = True
+                lock_msg = "🔒 Locked"
+
         with st.container():
-            col1, col2, col3 = st.columns([1, 4, 2])
+            col1, col2, col3 = st.columns([1, 4, 3])
             with col1:
                 st.write(f"**#{match['display_id']}**")
             with col2:
@@ -136,7 +150,7 @@ def show_fixture_list(user_email):
                 if match['id'] in predicted_match_ids:
                     st.success("✅ Predicted", icon="✅")
             with col3:
-                if st.button("Predict ➜", key=f"btn_{match['id']}"):
+                if st.button(lock_msg, key=f"btn_{match['id']}", disabled=is_locked_for_pred):
                     st.session_state.selected_match = match
                     st.rerun()
             st.divider()
@@ -217,7 +231,11 @@ def show_prediction_form(user_email):
                     group_id=group_id,
                     season=st.session_state.selected_season
                 )
-                st.success("✅ Saved! Click 'Back' to return.")
+                st.success("✅ Saved! Redirecting...")
+                import time
+                time.sleep(1)
+                st.session_state.selected_match = None
+                st.rerun()
 
 # --- 5. PAGE 3: PROFILE VIEW ---
 def show_profile(user_email, user_name, game_name):
@@ -290,8 +308,9 @@ def show_predictions_list():
                 is_unlocked = True
                 unlock_delta = ""
                 
-                if match.get("date_obj"):
-                    unlock_time = match["date_obj"] - datetime.timedelta(minutes=25)
+                match_date_obj = match.get("date_obj")
+                if isinstance(match_date_obj, datetime.datetime):
+                    unlock_time = match_date_obj - datetime.timedelta(minutes=25)
                     if current_time_ny < unlock_time:
                         is_unlocked = False
                         
@@ -501,6 +520,17 @@ def main():
     game_name = user_data.get('game_name')
 
     # Sidebar Navigation System
+    # CSS to help collapse sidebar on mobile after clicking a button
+    st.markdown("""
+        <style>
+        @media (max-width: 768px) {
+            [data-testid="stSidebar"][aria-expanded="true"] {
+                display: none;
+            }
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
     with st.sidebar:
         st.write(f"Welcome back,")
         st.write(f"**{game_name}**")
