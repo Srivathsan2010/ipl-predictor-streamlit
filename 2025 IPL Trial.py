@@ -520,17 +520,6 @@ def main():
     game_name = user_data.get('game_name')
 
     # Sidebar Navigation System
-    # CSS to help collapse sidebar on mobile after clicking a button
-    st.markdown("""
-        <style>
-        @media (max-width: 768px) {
-            [data-testid="stSidebar"][aria-expanded="true"] {
-                display: none;
-            }
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
     with st.sidebar:
         st.write(f"Welcome back,")
         st.write(f"**{game_name}**")
